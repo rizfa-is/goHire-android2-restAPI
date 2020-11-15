@@ -1,4 +1,8 @@
-const { createWorkerAccountModul, getAllModul, getAllAbilityModul, getAllEngineer } = require('../moduls/general')
+const {
+  createWorkerAccountModul, getAllModul, getAllEngineerModul, getEngineerByIdModul, getAbilityByIdModul, getAllAbilityModul,
+  getAllPortfolioModul, getPortfolioByIdModul, getAllExperienceModul, getExperienceByIdModul, getAllCompanyModul, getCompanyByIdModul
+} = require('../moduls/general')
+
 const { successRegisterHandling, errorRegisterHandling, errorInternalHandling } = require('../helpers/error-handling')
 const errorHandling = require('../helpers/error-handling')
 
@@ -76,7 +80,20 @@ module.exports = {
       }
 
       const offset = (page - 1) * limit
-      const result = await getAllEngineer(searchKey, searchValue, limit, offset, filter)
+      const result = await getAllEngineerModul(searchKey, searchValue, limit, offset, filter)
+      if (result.length) {
+        successRegisterHandling(res, result)
+      } else {
+        errorRegisterHandling(res)
+      }
+    } catch (error) {
+      errorInternalHandling(res)
+    }
+  },
+  getEngineerById: async (req, res) => {
+    try {
+      const { en_id } = req.params
+      const result = await getEngineerByIdModul(en_id)
       if (result.length) {
         successRegisterHandling(res, result)
       } else {
@@ -88,8 +105,129 @@ module.exports = {
   },
   getAllAbility: async (req, res) => {
     try {
+      const result = await getAllAbilityModul()
+      if (result.length) {
+        successRegisterHandling(res, result)
+      } else {
+        errorRegisterHandling(res)
+      }
+    } catch (error) {
+      errorInternalHandling(res)
+    }
+  },
+  getAbilityById: async (req, res) => {
+    try {
       const { en_id } = req.params
-      const result = await getAllAbilityModul(en_id)
+      const result = await getAbilityByIdModul(en_id)
+      if (result.length) {
+        successRegisterHandling(res, result)
+      } else {
+        errorRegisterHandling(res)
+      }
+    } catch (error) {
+      errorInternalHandling(res)
+    }
+  },
+  // Engineer Detail Page
+  getAllPortfolio: async (req, res) => {
+    try {
+      const result = await getAllPortfolioModul()
+      console.log(result)
+      if (result.length) {
+        successRegisterHandling(res, result)
+      } else {
+        errorRegisterHandling(res)
+      }
+    } catch (error) {
+      errorInternalHandling(res)
+    }
+  },
+  getPortfolioById: async (req, res) => {
+    try {
+      const { en_id } = req.params
+      const result = await getPortfolioByIdModul(en_id)
+      if (result.length) {
+        successRegisterHandling(res, result)
+      } else {
+        errorRegisterHandling(res)
+      }
+    } catch (error) {
+      errorInternalHandling(res)
+    }
+  },
+  getAllExperience: async (req, res) => {
+    try {
+      const result = await getAllExperienceModul()
+      if (result.length) {
+        successRegisterHandling(res, result)
+      } else {
+        errorRegisterHandling(res)
+      }
+    } catch (error) {
+      errorInternalHandling(res)
+    }
+  },
+  getExperienceById: async (req, res) => {
+    try {
+      const { en_id } = req.params
+      const result = await getExperienceByIdModul(en_id)
+      if (result.length) {
+        successRegisterHandling(res, result)
+      } else {
+        errorRegisterHandling(res)
+      }
+    } catch (error) {
+      errorInternalHandling(res)
+    }
+  },
+  // Company Detail Page
+  getAllCompany: async (req, res) => {
+    try {
+      let { search, limit, page, filter } = req.query
+      let searchKey = ''
+      let searchValue = ''
+
+      if (typeof search === 'object') {
+        searchKey = Object.keys(search)[0]
+        searchValue = Object.values(search)[0]
+      } else {
+        searchKey = 'ac_name'
+        searchValue = search || ''
+      }
+
+      if (!limit) {
+        limit = 50
+      } else {
+        limit = parseInt(limit)
+      }
+
+      if (!page) {
+        page = 1
+      } else {
+        page = parseInt(page)
+      }
+
+      if (!filter) {
+        filter = 0
+      } else {
+        filter = parseInt(filter)
+      }
+
+      const offset = (page - 1) * limit
+      const result = await getAllCompanyModul(searchKey, searchValue, limit, offset, filter)
+      if (result.length) {
+        successRegisterHandling(res, result)
+      } else {
+        errorRegisterHandling(res)
+      }
+    } catch (error) {
+      errorInternalHandling(res)
+    }
+  },
+  getCompanyById: async (req, res) => {
+    try {
+      const { en_id } = req.params
+      const result = await getCompanyByIdModul(en_id)
       if (result.length) {
         successRegisterHandling(res, result)
       } else {
