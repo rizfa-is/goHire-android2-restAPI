@@ -1,7 +1,7 @@
 const {
-  createWorkerAccountModul, getAllModul, getAllEngineerModul, getEngineerByIdModul, getAbilityByIdModul, getAllAbilityModul,
+  createAccountModul, getAllModul, getAllEngineerModul, getEngineerByIdModul, getAbilityByIdModul, getAllAbilityModul,
   getAllPortfolioModul, getPortfolioByIdModul, getAllExperienceModul, getExperienceByIdModul, getAllCompanyModul, getCompanyByIdModul
-} = require('../moduls/general')
+} = require('../models/general')
 
 const { successRegisterHandling, errorRegisterHandling, errorInternalHandling } = require('../helpers/error-handling')
 const errorHandling = require('../helpers/error-handling')
@@ -17,7 +17,7 @@ module.exports = {
       }
 
       console.log(req.body.ac_name)
-      const result = await createWorkerAccountModul(data, 'Engineer')
+      const result = await createAccountModul(data, 'Engineer')
 
       if (result.affectedRows) {
         successRegisterHandling(res, result)
@@ -36,7 +36,7 @@ module.exports = {
         ac_name: ac_name, ac_email: ac_email, ac_phone: ac_phone, ac_password: ac_password, ac_level: 'Company'
       }
 
-      const result = await createWorkerAccountModul(data, 'Company', cp_company, cp_position)
+      const result = await createAccountModul(data, 'Company', cp_company, cp_position)
 
       if (result.affectedRows) {
         successRegisterHandling(res, result)

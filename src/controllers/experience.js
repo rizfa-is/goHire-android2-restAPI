@@ -1,15 +1,15 @@
-const { createEngineerModul } = require('../models/engineer')
+const { createExperienceModul } = require('../models/experience')
 const { successRegisterHandling, errorRegisterHandling, errorInternalHandling } = require('../helpers/error-handling')
 
 module.exports = {
-  createEngineer: async (req, res) => {
+  createExperience: async (req, res) => {
     try {
-      const { ac_id } = req.body
+      const { en_id } = req.body
       const data = {
-        ac_id: ac_id
+        en_id: en_id
       }
 
-      const result = await createEngineerModul(data)
+      const result = await createExperienceModul(data)
 
       if (result.length) {
         successRegisterHandling(res, result)

@@ -1,7 +1,7 @@
 const Router = require('express')
 const router = Router()
 const {
-  createEngineerAccount, getAcEnCp, createCompanyAccount, getAllEngineer, getAllAbility, getAbilityById, getEngineerById,
+  createEngineerAccount, createCompanyAccount, getAllEngineer, getAllAbility, getAbilityById, getEngineerById,
   getAllPortfolio, getPortfolioById, getAllExperience, getExperienceById, getAllCompany, getCompanyById
 } = require('../controllers/general')
 

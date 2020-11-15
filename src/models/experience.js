@@ -1,8 +1,8 @@
 module.exports = {
-  createEngineerModul: (db, data) => {
+  createExperienceModul: (db, data) => {
     return new Promise((resolve, reject) => {
-      const query = 'INSERT INTO engineer SET ?'
-      db.query(query, data, (err, result, field) => {
+      const query = 'INSERT INTO experience SET ?'
+      db.query(query, data, async (err, result, field) => {
         if (!err) {
           resolve(result)
         } else {

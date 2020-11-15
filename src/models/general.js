@@ -1,11 +1,11 @@
 const db = require('../helpers/db')
-const { createEngineerModul } = require('../moduls/engineer')
-const { createCompanyModul } = require('../moduls/company')
+const { createEngineerModul } = require('../models/engineer')
+const { createCompanyModul } = require('../models/company')
 
 module.exports = {
   // === Login Page ===
   // Register
-  createWorkerAccountModul: (data, level, company, position) => {
+  createAccountModul: (data, level, company, position) => {
     return new Promise((resolve, reject) => {
       const query = 'INSERT INTO account SET ?'
       db.query(query, data, async (err, result, field) => {
@@ -175,7 +175,7 @@ module.exports = {
       })
     })
   },
-  // Company Detail Page
+  // === Company Detail Page ===
   getAllCompanyModul: (searchKey, searchValue, limit, offset, filter) => {
     return new Promise((resolve, reject) => {
       let query = ''
