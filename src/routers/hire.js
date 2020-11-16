@@ -1,7 +1,11 @@
-const Router = require('express')
+const { Router } = require('express')
 const router = Router()
-const { createHire } = require('../controllers/hire')
+const { getAllHire, getHireById, createHire, deleteHire, updateHire } = require('../controllers/hire')
 
-router.post('/project/create', createHire)
+router.get('/hire', getAllHire)
+router.get('/hire/:hr_id', getHireById)
+router.put('/hire/update/:hr_id', updateHire)
+router.post('/hire/create', createHire)
+router.delete('/hire/:hr_id', deleteHire)
 
 module.exports = router

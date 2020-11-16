@@ -1,4 +1,4 @@
-const { getAllProjectModul, getProjectByIdModul, createProjectModul, deleteProjectModul, updateProjectModul, parsialUpdateProjectModul, parsialUpdateProjectModul2 } = require('../models/project')
+const { getAllProjectModul, getProjectByIdModul, createProjectModul, deleteProjectModul, updateProjectModul } = require('../models/project')
 const { successProjectHandling, errorProjectHandling, errorInternalProjectHandling } = require('../helpers/error-handling')
 
 module.exports = {
@@ -68,9 +68,7 @@ module.exports = {
   createProject: async (req, res) => {
     try {
       const data = req.body
-
-      console.log(req.body.ac_name)
-      const result = await createProjectModul(data, 'Engineer')
+      const result = await createProjectModul(data)
 
       if (result.affectedRows) {
         successProjectHandling(res, result)
@@ -81,18 +79,49 @@ module.exports = {
       errorInternalProjectHandling(res)
     }
   },
-  parsialUpdateProject: async (req, res) => {
+  deleteProject: async (req, res) => {
     try {
-      const { en_id } = req.params
-      const data = req.body
+      const { pj_id } = req.params
 
-      const result = await getProjectByIdModul(en_id)
+      const result = await getProjectByIdModul(pj_id)
       if (result.length) {
-        const result2 = await updateProjectModul(data, en_id)
+        const result2 = await deleteProjectModul(pj_id)
         if (result2.affectedRows) {
           res.status(200).send({
             success: true,
-            message: `Item project id ${en_id} has been deleted!`
+            message: `Item project id ${pj_id} has been deleted!`
+          })
+        } else {
+          res.status(404).send({
+            success: false,
+            message: 'Item project failed to delete!'
+          })
+        }
+      } else {
+        res.status(404).send({
+          success: false,
+          message: 'Item project failed to delete!'
+        })
+      }
+    } catch (error) {
+      res.status(400).send({
+        success: false,
+        message: 'Data project not found'
+      })
+    }
+  },
+  updateProject: async (req, res) => {
+    try {
+      const { pj_id } = req.params
+      const data = req.body
+
+      const result = await getProjectByIdModul(pj_id)
+      if (result.length) {
+        const result2 = await updateProjectModul(pj_id, data)
+        if (result2.affectedRows) {
+          res.status(200).send({
+            success: true,
+            message: `Item project id ${pj_id} has been deleted!`
           })
         } else {
           res.status(404).send({

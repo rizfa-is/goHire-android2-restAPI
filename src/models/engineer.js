@@ -1,19 +1,114 @@
-const { createAbilityModul } = require('./ability')
-const { createExperienceModul } = require('./experience')
-const { createPortfolioModul } = require('./portfolio')
+const db = require('../helpers/db')
 
 module.exports = {
-  createEngineerModul: (db, data) => {
+  getAllEngineerModul: (searchKey, searchValue, limit, offset, filter) => {
+    return new Promise((resolve, reject) => {
+      let query = ''
+      switch (filter) {
+        case 0:
+          query = `SELECT engineer.en_id, engineer.ac_id, account.ac_name, engineer.en_job_title, engineer.en_location, engineer.en_job_type, engineer.en_desc, COUNT(ability.en_id) AS skill, account.ac_email, engineer.en_ig, engineer.en_github, engineer.en_gitlab, engineer.en_avatar 
+          FROM account 
+          LEFT JOIN engineer ON account.ac_id = engineer.ac_id LEFT JOIN ability ON engineer.en_id = ability.en_id 
+          WHERE ${searchKey} LIKE '%${searchValue}%'
+          GROUP BY engineer.en_id 
+          LIMIT ${limit} OFFSET ${offset}`
+          break
+        case 1:
+          query = `SELECT engineer.en_id, engineer.ac_id, account.ac_name, engineer.en_job_title, engineer.en_location, engineer.en_job_type, engineer.en_desc, COUNT(ability.en_id) AS skill, account.ac_email, engineer.en_ig, engineer.en_github, engineer.en_gitlab, engineer.en_avatar 
+          FROM account 
+          LEFT JOIN engineer ON account.ac_id = engineer.ac_id LEFT JOIN ability ON engineer.en_id = ability.en_id 
+          WHERE ${searchKey} LIKE '%${searchValue}%'
+          GROUP BY engineer.en_id 
+          ORDER BY account.ac_name 
+          LIMIT ${limit} OFFSET ${offset}`
+          break
+        case 2:
+          query = `SELECT engineer.en_id, engineer.ac_id, account.ac_name, engineer.en_job_title, engineer.en_location, engineer.en_job_type, engineer.en_desc, COUNT(ability.en_id) AS skill, account.ac_email, engineer.en_ig, engineer.en_github, engineer.en_gitlab, engineer.en_avatar 
+          FROM account 
+          LEFT JOIN engineer ON account.ac_id = engineer.ac_id LEFT JOIN ability ON engineer.en_id = ability.en_id 
+          WHERE ${searchKey} LIKE '%${searchValue}%'
+          GROUP BY engineer.en_id
+          ORDER BY skill DESC 
+          LIMIT ${limit} OFFSET ${offset}`
+          break
+        case 3:
+          query = `SELECT engineer.en_id, engineer.ac_id, account.ac_name, engineer.en_job_title, engineer.en_location, engineer.en_job_type, engineer.en_desc, COUNT(ability.en_id) AS skill, account.ac_email, engineer.en_ig, engineer.en_github, engineer.en_gitlab, engineer.en_avatar 
+          FROM account 
+          LEFT JOIN engineer ON account.ac_id = engineer.ac_id LEFT JOIN ability ON engineer.en_id = ability.en_id 
+          WHERE ${searchKey} LIKE '%${searchValue}%'
+          GROUP BY engineer.en_id 
+          ORDER BY engineer.en_location 
+          LIMIT ${limit} OFFSET ${offset}`
+          break
+        case 4:
+          query = `SELECT engineer.en_id, engineer.ac_id, account.ac_name, engineer.en_job_title, engineer.en_location, engineer.en_job_type, engineer.en_desc, COUNT(ability.en_id) AS skill, account.ac_email, engineer.en_ig, engineer.en_github, engineer.en_gitlab, engineer.en_avatar 
+          FROM account 
+          LEFT JOIN engineer ON account.ac_id = engineer.ac_id LEFT JOIN ability ON engineer.en_id = ability.en_id 
+          WHERE ${searchKey} LIKE '%${searchValue}%'
+          GROUP BY engineer.en_id 
+          ORDER BY engineer.en_job_type 
+          LIMIT ${limit} OFFSET ${offset}`
+          break
+      }
+      db.query(query, (err, result, fields) => {
+        if (!err) {
+          resolve(result)
+        } else {
+          reject(new Error(err))
+        }
+      })
+    })
+  },
+  getEngineerByIdModul: (enId) => {
+    return new Promise((resolve, reject) => {
+      const query = `SELECT engineer.en_id, engineer.ac_id, account.ac_name, engineer.en_job_title, engineer.en_location, engineer.en_job_type, engineer.en_desc, COUNT(ability.en_id) AS skill, account.ac_email, engineer.en_ig, engineer.en_github, engineer.en_gitlab, engineer.en_avatar 
+      FROM account 
+      LEFT JOIN engineer ON account.ac_id = engineer.ac_id LEFT JOIN ability ON engineer.en_id = ability.en_id  
+      WHERE engineer.en_id = ${enId}`
+      db.query(query, (err, result, fields) => {
+        if (!err) {
+          resolve(result)
+        } else {
+          reject(new Error(err))
+        }
+      })
+    })
+  },
+  createEngineerModul: (data) => {
     return new Promise((resolve, reject) => {
       const query = 'INSERT INTO engineer SET ?'
       db.query(query, data, async (err, result, field) => {
         if (!err) {
-          await createAbilityModul(db, { en_id: result.insertId })
-          await createExperienceModul(db, { en_id: result.insertId })
-          await createPortfolioModul(db, { en_id: result.insertId })
           resolve(result)
         } else {
           reject(err)
+        }
+      })
+    })
+  },
+  deleteEngineerModul: (acId) => {
+    return new Promise((resolve, reject) => {
+      const query = `DELETE FROM engineer 
+      WHERE ac_id = ${acId}`
+      db.query(query, (err, result, _fields) => {
+        if (!err) {
+          console.log(result)
+          resolve(result)
+        } else {
+          reject(new Error(err))
+        }
+      })
+    })
+  },
+  updateEngineerModul: (acId, data) => {
+    return new Promise((resolve, reject) => {
+      const query = `UPDATE engineer SET ?
+      WHERE ac_id = ${acId}`
+      db.query(query, data, (err, result, _fields) => {
+        if (!err) {
+          resolve(result)
+        } else {
+          reject(new Error(err))
         }
       })
     })

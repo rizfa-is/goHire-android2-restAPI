@@ -1,5 +1,4 @@
 const db = require('../helpers/db')
-const { createHireModul } = require('../models/hire')
 
 module.exports = {
   getAllProjectModul: (searchKey, searchValue, limit, offset) => {
@@ -41,11 +40,26 @@ module.exports = {
       })
     })
   },
-  parsialUpdateProjectModul: (pjId, data) => {
+  deleteProjectModul: (pjId) => {
     return new Promise((resolve, reject) => {
-      db.query(`UPDATE project SET ? WHERE pj_id = ${pjId}`, data, async (err, result, _fields) => {
+      const query = `DELETE FROM project 
+      WHERE pj_id = ${pjId}`
+      db.query(query, (err, result, _fields) => {
         if (!err) {
-          await createHireModul(db, { pj_id: pjId })
+          console.log(result)
+          resolve(result)
+        } else {
+          reject(new Error(err))
+        }
+      })
+    })
+  },
+  updateProjectModul: (pjId, data) => {
+    return new Promise((resolve, reject) => {
+      const query = `UPDATE project SET ?
+      WHERE pj_id = ${pjId}`
+      db.query(query, data, (err, result, _fields) => {
+        if (!err) {
           resolve(result)
         } else {
           reject(new Error(err))
