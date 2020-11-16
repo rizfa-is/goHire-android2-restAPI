@@ -15,7 +15,7 @@ module.exports = {
   },
   getAbilityByIdModul: (abId) => {
     return new Promise((resolve, reject) => {
-      const query = `SELECT * FROM ability WHERE ab_id = ${abId} ORDER BY ability.ab_id`
+      const query = `SELECT * FROM ability WHERE en_id = ${abId} ORDER BY ability.en_id`
       db.query(query, (err, result, fields) => {
         if (!err) {
           resolve(result)

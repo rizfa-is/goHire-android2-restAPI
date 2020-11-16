@@ -17,8 +17,8 @@ module.exports = {
   },
   getAbilityById: async (req, res) => {
     try {
-      const { en_id } = req.params
-      const result = await getAbilityByIdModul(en_id)
+      const { ab_id } = req.params
+      const result = await getAbilityByIdModul(ab_id)
       if (result.length) {
         successRegisterHandling(res, result)
       } else {

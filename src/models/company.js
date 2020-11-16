@@ -6,7 +6,7 @@ module.exports = {
       let query = ''
       switch (filter) {
         case 0:
-          query = `SELECT company.cp_id, company.ac_id, account.ac_name, company.cp_company, company.cp_position, company.cp_field, company.cp_location, account.ac_email, company.cp_insta, company.cp_linkedin, company.cp_img
+          query = `SELECT *
           FROM account 
           INNER JOIN company ON account.ac_id = company.ac_id 
           WHERE ${searchKey} LIKE '%${searchValue}%'
