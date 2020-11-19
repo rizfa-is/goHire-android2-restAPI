@@ -1,22 +1,25 @@
-const { createAccountModul, updateAccountModul, deleteAccountModul } = require('../models/account')
-
-const { successRegisterHandling, errorHandling, errorInternalHandling } = require('../helpers/error-handling')
+require('dotenv')
+const bcrypt = require('bcrypt')
+const { createAccountModul, updateAccountModul, deleteAccountModul, checkExistedEmailModul } = require('../models/account')
+const { successRegisterHandling, errorRegisterHandling, errorInternalHandling } = require('../helpers/error-handling')
+const jwt = require('jsonwebtoken')
 
 module.exports = {
   createEngineerAccount: async (req, res) => {
     try {
       const { ac_name, ac_email, ac_phone, ac_password } = req.body
+      const salt = bcrypt.genSaltSync(10)
+      const encrypt = bcrypt.hashSync(ac_password, salt)
+
       const data = {
-        ac_name: ac_name, ac_email: ac_email, ac_phone: ac_phone, ac_password: ac_password, ac_level: 'Engineer'
+        ac_name: ac_name, ac_email: ac_email, ac_phone: ac_phone, ac_password: encrypt, ac_level: 'Engineer'
       }
-
-      console.log(req.body.ac_name)
-      const result = await createAccountModul(data, 'Engineer')
-
-      if (result.affectedRows) {
-        successRegisterHandling(res, result)
+      const checkEmail = await checkExistedEmailModul(ac_email)
+      if (checkEmail.length > 0) {
+        errorRegisterHandling(res)
       } else {
-        errorHandling(res)
+        const result = await createAccountModul(data, 'Engineer')
+        successRegisterHandling(res, result)
       }
     } catch (error) {
       errorInternalHandling(res)
@@ -25,16 +28,18 @@ module.exports = {
   createCompanyAccount: async (req, res) => {
     try {
       const { ac_name, ac_email, ac_phone, ac_password, cp_company, cp_position } = req.body
+      const salt = bcrypt.genSaltSync(10)
+      const encrypt = bcrypt.hashSync(ac_password, salt)
       const data = {
-        ac_name: ac_name, ac_email: ac_email, ac_phone: ac_phone, ac_password: ac_password, ac_level: 'Company'
+        ac_name: ac_name, ac_email: ac_email, ac_phone: ac_phone, ac_password: encrypt, ac_level: 'Company'
       }
 
-      const result = await createAccountModul(data, 'Company', cp_company, cp_position)
-
-      if (result.affectedRows) {
-        successRegisterHandling(res, result)
+      const checkEmail = await checkExistedEmailModul(ac_email)
+      if (checkEmail.length > 0) {
+        errorRegisterHandling(res)
       } else {
-        errorHandling(res)
+        const result = await createAccountModul(data, 'Company', cp_company, cp_position)
+        successRegisterHandling(res, result)
       }
     } catch (error) {
       errorInternalHandling(res)
@@ -43,14 +48,18 @@ module.exports = {
   updateEngineerAccount: async (req, res) => {
     try {
       const { ac_id } = req.params
-      const { ac_name, ac_email, ac_phone, ac_password, 
-        en_job_title, en_location, en_job_type, en_desc, en_avatar } = req.body
+      const {
+        ac_name, ac_email, ac_phone, ac_password,
+        en_job_title, en_location, en_job_type, en_desc
+      } = req.body
+      const salt = bcrypt.genSaltSync(10)
+      const encrypt = bcrypt.hashSync(ac_password, salt)
       const data = {
-        ac_name: ac_name, ac_email: ac_email, ac_phone: ac_phone, ac_password: ac_password
+        ac_name: ac_name, ac_email: ac_email, ac_phone: ac_phone, ac_password: encrypt
       }
 
-      const result = await updateAccountModul(ac_id, data, 'Engineer', en_job_title, en_location, en_job_type, en_desc, en_avatar)
-      console.log(result)
+      const result = await updateAccountModul(ac_id, req, data, 'Engineer', en_job_title, en_location, en_job_type, en_desc)
+      console.log('result : ' + result)
       if (result.affectedRows) {
         res.status(200).send({
           success: true,
@@ -72,14 +81,17 @@ module.exports = {
   updateCompanyAccount: async (req, res) => {
     try {
       const { ac_id } = req.params
-      const { ac_name, ac_email,
-        cp_company, cp_position, cp_field, cp_location, cp_img } = req.body
+      const {
+        ac_name, ac_email, ac_password,
+        cp_company, cp_position, cp_field, cp_location
+      } = req.body
+      const salt = bcrypt.genSaltSync(10)
+      const encrypt = bcrypt.hashSync(ac_password, salt)
       const data = {
-        ac_name: ac_name, ac_email: ac_email
+        ac_name: ac_name, ac_email: ac_email, ac_password: encrypt
       }
 
-      const result = await updateAccountModul(ac_id, data, 'Company', cp_company, cp_position, cp_field, cp_location, cp_img)
-      console.log(result)
+      const result = await updateAccountModul(ac_id, req, data, 'Company', cp_company, cp_position, cp_field, cp_location)
       if (result.affectedRows) {
         res.status(200).send({
           success: true,
@@ -141,6 +153,49 @@ module.exports = {
       res.status(400).send({
         success: false,
         message: 'Data project not found'
+      })
+    }
+  },
+  loginAccount: async (req, res) => {
+    try {
+      const { ac_email, ac_password } = req.body
+      const getUserData = await checkExistedEmailModul(ac_email)
+      console.log(getUserData)
+
+      if (getUserData.length > 0) {
+        const checkPassword = bcrypt.compareSync(ac_password, getUserData[0].ac_password)
+        if (checkPassword) {
+          const { ac_email, ac_password, ac_level } = getUserData[0]
+          let payload = {
+            ac_email,
+            ac_password,
+            ac_level
+          }
+
+          const token = jwt.sign(payload, process.env.JWT_KEY, { expiresIn: '1h' })
+          payload = { ...payload, token }
+          res.status(200).send({
+            success: true,
+            message: 'Successfully Login!',
+            data: payload
+          })
+        } else {
+          res.status(200).send({
+            success: true,
+            message: 'Wrong Password!'
+          })
+        }
+      } else {
+        res.status(400).send({
+          success: false,
+          message: 'Email/Account not registered!'
+        })
+      }
+    } catch (error) {
+      console.log(error)
+      res.status(500).send({
+        success: false,
+        message: 'Bad request'
       })
     }
   }

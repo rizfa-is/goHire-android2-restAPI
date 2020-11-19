@@ -10,7 +10,7 @@ module.exports = {
   errorRegisterHandling: (res) => {
     res.status(404).send({
       success: false,
-      message: 'Unfortunely, Register unsuccesfull!'
+      message: 'Unfortunely, Email already exist!'
     })
   },
   errorInternalHandling: (res) => {

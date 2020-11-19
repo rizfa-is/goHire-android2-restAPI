@@ -46,7 +46,7 @@ module.exports = {
     try {
       const { ab_id } = req.params
 
-      const result = await getAbilityByIdModul(ab_id)
+      const result = await getAllAbilityModul(ab_id)
       if (result.length) {
         const result2 = await deleteAbilityModul(ab_id)
         if (result2.affectedRows) {

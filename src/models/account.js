@@ -10,36 +10,61 @@ module.exports = {
       const query = 'INSERT INTO account SET ?'
       db.query(query, data, async (err, result, field) => {
         if (!err) {
+          let newData = { }
           if (level === 'Engineer') {
             await createEngineerModul({ ac_id: result.insertId })
+            newData = {
+              id: result.insertId,
+              ...data
+            }
+            delete newData.ac_password
           } else {
             await createCompanyModul({
               ac_id: result.insertId,
               cp_company: company,
               cp_position: position
             })
+            newData = {
+              id: result.insertId,
+              ...data,
+              cp_company: company,
+              cp_position: position
+            }
+            delete newData.ac_password
           }
-          resolve(result)
+          resolve(newData)
         } else {
           reject(new Error(err))
         }
       })
     })
   },
-  updateAccountModul: (acId, data, level, jobTitle, location, jobType, desc, avatar) => {
+  updateAccountModul: (acId, req, data, level, jobTitle, location, jobType, desc) => {
     return new Promise((resolve, reject) => {
       const query = `UPDATE account SET ?
       WHERE ac_id = ${acId}`
-      console.log(data)
       db.query(query, data, async (err, result, field) => {
         if (!err) {
           if (level === 'Engineer') {
-            await updateEngineerModul(acId, { en_job_title: jobTitle, en_location: location, en_job_type: jobType, en_desc: desc, en_avatar: avatar })
+            await updateEngineerModul(acId, {
+              en_job_title: jobTitle,
+              en_location: location,
+              en_job_type: jobType,
+              en_desc: desc,
+              en_avatar: req.files === undefined ? '' : req.files.en_avatar[0].filename
+            })
           } else {
-            await updateCompanyModul(acId, { cp_company: jobTitle, cp_position: location, cp_field: jobType, cp_location: desc, cp_img: avatar })
+            await updateCompanyModul(acId, {
+              cp_company: jobTitle,
+              cp_position: location,
+              cp_field: jobType,
+              cp_location: desc,
+              cp_img: req.files === undefined ? '' : req.files.cp_img[0].filename
+            })
           }
           resolve(result)
         } else {
+          console.log(err)
           reject(new Error(err))
         }
       })
@@ -56,6 +81,19 @@ module.exports = {
           } else {
             await deleteCompanyModul(acId)
           }
+          resolve(result)
+        } else {
+          reject(new Error(err))
+        }
+      })
+    })
+  },
+  checkExistedEmailModul: (acEmail) => {
+    return new Promise((resolve, reject) => {
+      const query = `SELECT * FROM account 
+      WHERE ac_email = '${acEmail}'`
+      db.query(query, (err, result, field) => {
+        if (!err) {
           resolve(result)
         } else {
           reject(new Error(err))

@@ -68,7 +68,11 @@ module.exports = {
   createPortfolio: async (req, res) => {
     try {
       const data = req.body
-      const result = await createPortfolioModul(data)
+      const setData = {
+        ...data,
+        pr_img: req.files === undefined ? '' : req.files.pr_img[0].filename
+      }
+      const result = await createPortfolioModul(setData)
 
       if (result.affectedRows) {
         successProjectHandling(res, result)
@@ -114,10 +118,14 @@ module.exports = {
     try {
       const { pr_id } = req.params
       const data = req.body
+      const setData = {
+        ...data,
+        pr_img: req.files === undefined ? '' : req.files.pr_img[0].filename
+      }
 
       const result = await getPortfolioByIdModul(pr_id)
       if (result.length) {
-        const result2 = await updatePortfolioModul(pr_id, data)
+        const result2 = await updatePortfolioModul(pr_id, setData)
         if (result2.affectedRows) {
           res.status(200).send({
             success: true,

@@ -68,7 +68,11 @@ module.exports = {
   createProject: async (req, res) => {
     try {
       const data = req.body
-      const result = await createProjectModul(data)
+      const setData = {
+        ...data,
+        pj_img: req.files === undefined ? '' : req.files.pj_img[0].filename
+      }
+      const result = await createProjectModul(setData)
 
       if (result.affectedRows) {
         successProjectHandling(res, result)
@@ -114,10 +118,14 @@ module.exports = {
     try {
       const { pj_id } = req.params
       const data = req.body
+      const setData = {
+        ...data,
+        pj_img: req.files === undefined ? '' : req.files.pj_img[0].filename
+      }
 
       const result = await getProjectByIdModul(pj_id)
       if (result.length) {
-        const result2 = await updateProjectModul(pj_id, data)
+        const result2 = await updateProjectModul(pj_id, setData)
         if (result2.affectedRows) {
           res.status(200).send({
             success: true,

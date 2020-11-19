@@ -1,10 +1,11 @@
 const Router = require('express')
 const router = Router()
-const { updateEngineer, deleteEngineer, getAllEngineer, getEngineerById } = require('../controllers/engineer')
+const { getAllEngineer, getEngineerById, updateEngineer } = require('../controllers/engineer')
+const { authorizationEngineer } = require('../middleware/authorize')
+const uploadImage = require('../middleware/multer')
 
-router.get('/engineer', getAllEngineer)
-router.get('/engineer/:en_id', getEngineerById)
-router.put('/engineer/update/:en_id', updateEngineer)
-router.delete('/engineer/:en_id', deleteEngineer)
+router.get('/engineer', authorizationEngineer, getAllEngineer)
+router.get('/engineer/:en_id', authorizationEngineer, getEngineerById)
+// router.put('/account/engineer/update/:ac_id', uploadImage, updateEngineer)
 
 module.exports = router

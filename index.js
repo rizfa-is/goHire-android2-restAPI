@@ -11,11 +11,26 @@ const router5 = require('./src/routers/ability')
 const router6 = require('./src/routers/experience')
 const router7 = require('./src/routers/portfolio')
 const router8 = require('./src/routers/company')
+const morgan = require('morgan')
+const cors = require('cors')
 const port = process.env.PORT
 
 // Middleware
 app.use(bodyParser.urlencoded({ extended: false }))
-// Login, Register
+app.use(morgan('dev'))
+app.use(cors())
+
+// Config CORS
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*')
+  res.header(
+    'Access-Control-Allow-Headers',
+    'Origin, X-Requested-With, Content-Type, Accept, Authorization'
+  )
+  next()
+})
+
+// Account Login, Register, Setting
 app.use('/', router)
 // Project
 app.use('/', router2)
@@ -31,6 +46,8 @@ app.use('/', router6)
 app.use('/', router7)
 // Company
 app.use('/', router8)
+
+app.use('/image', express.static('./uploads'))
 
 app.get('/', (req, res) => {
   res.send('Welcome to GoHire')

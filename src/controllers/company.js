@@ -1,4 +1,4 @@
-const { createCompanyModul, getAllCompanyModul, getCompanyByIdModul, deleteCompanyModul, updateCompanyModul } = require('../models/company')
+const { getAllCompanyModul, getCompanyByIdModul } = require('../models/company')
 const { successRegisterHandling, errorRegisterHandling, errorInternalHandling } = require('../helpers/error-handling')
 
 module.exports = {
@@ -56,71 +56,6 @@ module.exports = {
       }
     } catch (error) {
       errorInternalHandling(res)
-    }
-  },
-  createCompany: async (req, res) => {
-    try {
-      const { ac_id } = req.body
-      const data = {
-        ac_id: ac_id
-      }
-
-      const result = await createCompanyModul(data)
-
-      if (result.length) {
-        successRegisterHandling(res, result)
-      } else {
-        errorRegisterHandling(res)
-      }
-    } catch (error) {
-      errorInternalHandling(res)
-    }
-  },
-  deleteEngineer: async (req, res) => {
-    try {
-      const { ac_id } = req.params
-
-      const result = await deleteCompanyModul(ac_id)
-      if (result.affectedRows) {
-        res.status(200).send({
-          success: true,
-          message: `Item project id ${ac_id} has been deleted!`
-        })
-      } else {
-        res.status(404).send({
-          success: false,
-          message: 'Item project failed to delete!'
-        })
-      }
-    } catch (error) {
-      res.status(400).send({
-        success: false,
-        message: 'Data project not found'
-      })
-    }
-  },
-  updateEngineer: async (req, res) => {
-    try {
-      const { ac_id } = req.params
-      const data = req.body
-
-      const result = await updateCompanyModul(ac_id, data)
-      if (result.affectedRows) {
-        res.status(200).send({
-          success: true,
-          message: `Item project id ${ac_id} has been updated!`
-        })
-      } else {
-        res.status(404).send({
-          success: false,
-          message: 'Item project failed to updated!'
-        })
-      }
-    } catch (error) {
-      res.status(400).send({
-        success: false,
-        message: 'Data project not found'
-      })
     }
   }
 }
