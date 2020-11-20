@@ -1,5 +1,5 @@
 const { getAllEngineerModul, getEngineerByIdModul } = require('../models/engineer')
-const { successRegisterHandling, errorRegisterHandling, errorInternalHandling } = require('../helpers/error-handling')
+const { nestedJSONFunction, successRegisterHandling, errorRegisterHandling, errorInternalHandling } = require('../helpers/error-handling')
 
 module.exports = {
   getAllEngineer: async (req, res) => {
@@ -37,7 +37,7 @@ module.exports = {
       const offset = (page - 1) * limit
       const result = await getAllEngineerModul(searchKey, searchValue, limit, offset, filter)
       if (result.length) {
-        successRegisterHandling(res, result)
+        nestedJSONFunction(result, res)
       } else {
         errorRegisterHandling(res)
       }

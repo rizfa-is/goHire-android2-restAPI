@@ -4,7 +4,6 @@ const jwt = require('jsonwebtoken')
 module.exports = {
   authorizationEngineer: (req, res, next) => {
     let token = req.headers.authorization
-    console.log(token)
     if (token) {
       token = token.split(' ')[1]
       jwt.verify(token, process.env.JWT_KEY, (error, result) => {

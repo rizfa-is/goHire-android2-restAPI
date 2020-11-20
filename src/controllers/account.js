@@ -59,7 +59,6 @@ module.exports = {
       }
 
       const result = await updateAccountModul(ac_id, req, data, 'Engineer', en_job_title, en_location, en_job_type, en_desc)
-      console.log('result : ' + result)
       if (result.affectedRows) {
         res.status(200).send({
           success: true,
@@ -160,7 +159,6 @@ module.exports = {
     try {
       const { ac_email, ac_password } = req.body
       const getUserData = await checkExistedEmailModul(ac_email)
-      console.log(getUserData)
 
       if (getUserData.length > 0) {
         const checkPassword = bcrypt.compareSync(ac_password, getUserData[0].ac_password)
@@ -192,7 +190,6 @@ module.exports = {
         })
       }
     } catch (error) {
-      console.log(error)
       res.status(500).send({
         success: false,
         message: 'Bad request'
