@@ -1,5 +1,8 @@
 const { createHireModul, getAllHireModul, getHireByIdModul, deleteHireModul, updateHireModul } = require('../models/hire')
-const { successHireHandling, errorHireHandling, errorInternalHireHandling } = require('../helpers/error-handling')
+const { successGetHandling, successGetByIdHandling, failGetByIdHandling, methodErrorHandling, errorInternalHandling, successCreateHandling, failCreateHandling, successDeleteHandling, failDeleteHandling, successUpdateHandling, failUpdateHandling } = require('../helpers/respons-handling')
+const moment = require('moment')
+const now = moment().format('YYYY-MM-DD HH:mm:ss')
+const scope = 'hiring'
 
 module.exports = {
   getAllHire: async (req, res) => {
@@ -32,12 +35,12 @@ module.exports = {
 
       const result = await getAllHireModul(searchKey, searchValue, limit, offset)
       if (result.length) {
-        successHireHandling(res, result)
+        successGetHandling(res, result, scope)
       } else {
-        errorHireHandling(res)
+        methodErrorHandling(res, scope)
       }
-    } catch (err) {
-      errorInternalHireHandling(res)
+    } catch (error) {
+      errorInternalHandling(res)
     }
   },
   getHireById: async (req, res) => {
@@ -46,37 +49,29 @@ module.exports = {
 
       const result = await getHireByIdModul(hr_id)
       if (result.length) {
-        res.status(200).send({
-          success: true,
-          message: `Hire with id ${hr_id}`,
-          data: result[0]
-        })
+        successGetByIdHandling(res, scope, hr_id, result)
       } else {
-        res.status(404).send({
-          success: false,
-          message: 'Data Hire with id ' + hr_id + ' not found'
-        })
+        failGetByIdHandling(res, scope, hr_id)
       }
     } catch (error) {
-      console.log(error)
-      res.status(500).send({
-        success: false,
-        message: 'Internal server error!'
-      })
+      errorInternalHandling(res)
     }
   },
   createHire: async (req, res) => {
     try {
-      const data = req.body
+      const reqBody = req.body
+      const data = {
+        ...reqBody,
+        hr_created_at: now
+      }
       const result = await createHireModul(data)
-
       if (result.affectedRows) {
-        successHireHandling(res, result)
+        successCreateHandling(res, scope)
       } else {
-        errorHireHandling(res)
+        failCreateHandling(res, scope)
       }
     } catch (error) {
-      errorInternalHireHandling(res)
+      errorInternalHandling(res)
     }
   },
   deleteHire: async (req, res) => {
@@ -87,59 +82,38 @@ module.exports = {
       if (result.length) {
         const result2 = await deleteHireModul(hr_id)
         if (result2.affectedRows) {
-          res.status(200).send({
-            success: true,
-            message: `Hire id ${hr_id} has been updated!`
-          })
+          successDeleteHandling(res, hr_id, scope)
         } else {
-          res.status(404).send({
-            success: false,
-            message: 'Item project failed to update!'
-          })
+          failDeleteHandling(res, scope, hr_id)
         }
       } else {
-        res.status(404).send({
-          success: false,
-          message: 'Item project failed to update!'
-        })
+        failDeleteHandling(res, scope, hr_id)
       }
     } catch (error) {
-      res.status(400).send({
-        success: false,
-        message: 'Data project not found'
-      })
+      methodErrorHandling(res, scope)
     }
   },
   updateHire: async (req, res) => {
     try {
       const { hr_id } = req.params
-      const data = req.body
-
+      const reqBody = req.body
+      const data = {
+        ...reqBody,
+        hr_date_confirm: now
+      }
       const result = await getHireByIdModul(hr_id)
       if (result.length) {
         const result2 = await updateHireModul(hr_id, data)
         if (result2.affectedRows) {
-          res.status(200).send({
-            success: true,
-            message: `Hire id ${hr_id} has been updated!`
-          })
+          successUpdateHandling(res, hr_id, scope)
         } else {
-          res.status(404).send({
-            success: false,
-            message: 'Item project failed to update!'
-          })
+          failUpdateHandling(res, scope)
         }
       } else {
-        res.status(404).send({
-          success: false,
-          message: 'Item project failed to update!'
-        })
+        failUpdateHandling(res, scope)
       }
     } catch (error) {
-      res.status(400).send({
-        success: false,
-        message: 'Data project not found'
-      })
+      methodErrorHandling(res, scope)
     }
   }
 }

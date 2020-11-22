@@ -1,15 +1,15 @@
 const { createAbilityModul, getAllAbilityModul, getAbilityByIdModul, deleteAbilityModul, updateAbilityModul } = require('../models/ability')
-const { successRegisterHandling, errorRegisterHandling, errorInternalHandling } = require('../helpers/error-handling')
-const errorHandling = require('../helpers/error-handling')
+const { successGetHandling, successGetByIdHandling, failGetByIdHandling, methodErrorHandling, errorInternalHandling, successCreateHandling, failCreateHandling, successDeleteHandling, failDeleteHandling, successUpdateHandling, failUpdateHandling } = require('../helpers/respons-handling')
+const scope = 'ability'
 
 module.exports = {
   getAllAbility: async (req, res) => {
     try {
       const result = await getAllAbilityModul()
       if (result.length) {
-        successRegisterHandling(res, result)
+        successGetHandling(res, result, scope)
       } else {
-        errorRegisterHandling(res)
+        methodErrorHandling(res, scope)
       }
     } catch (error) {
       errorInternalHandling(res)
@@ -20,9 +20,9 @@ module.exports = {
       const { ab_id } = req.params
       const result = await getAbilityByIdModul(ab_id)
       if (result.length) {
-        successRegisterHandling(res, result)
+        successGetByIdHandling(res, scope, ab_id, result)
       } else {
-        errorRegisterHandling(res)
+        failGetByIdHandling(res, scope, ab_id)
       }
     } catch (error) {
       errorInternalHandling(res)
@@ -32,11 +32,10 @@ module.exports = {
     try {
       const data = req.body
       const result = await createAbilityModul(data)
-
       if (result.affectedRows) {
-        successRegisterHandling(res, result)
+        successCreateHandling(res, scope)
       } else {
-        errorHandling(res)
+        failCreateHandling(res, scope)
       }
     } catch (error) {
       errorInternalHandling(res)
@@ -45,64 +44,38 @@ module.exports = {
   deleteAbility: async (req, res) => {
     try {
       const { ab_id } = req.params
-
       const result = await getAllAbilityModul(ab_id)
       if (result.length) {
         const result2 = await deleteAbilityModul(ab_id)
         if (result2.affectedRows) {
-          res.status(200).send({
-            success: true,
-            message: `Item project id ${ab_id} has been deleted!`
-          })
+          successDeleteHandling(res, ab_id, scope)
         } else {
-          res.status(404).send({
-            success: false,
-            message: 'Item project failed to delete!'
-          })
+          failDeleteHandling(res, scope, ab_id)
         }
       } else {
-        res.status(404).send({
-          success: false,
-          message: 'Item project failed to delete!'
-        })
+        failDeleteHandling(res, scope, ab_id)
       }
     } catch (error) {
-      res.status(400).send({
-        success: false,
-        message: 'Data project not found'
-      })
+      methodErrorHandling(res, scope)
     }
   },
   updateAbility: async (req, res) => {
     try {
       const { ab_id } = req.params
       const data = req.body
-
       const result = await getAbilityByIdModul(ab_id)
       if (result.length) {
         const result2 = await updateAbilityModul(ab_id, data)
         if (result2.affectedRows) {
-          res.status(200).send({
-            success: true,
-            message: `Item project id ${ab_id} has been updated!`
-          })
+          successUpdateHandling(res, ab_id, scope)
         } else {
-          res.status(404).send({
-            success: false,
-            message: 'Item project failed to updated!'
-          })
+          failUpdateHandling(res, scope)
         }
       } else {
-        res.status(404).send({
-          success: false,
-          message: 'Item project failed to updated!'
-        })
+        failUpdateHandling(res, scope)
       }
     } catch (error) {
-      res.status(400).send({
-        success: false,
-        message: 'Data project not found'
-      })
+      methodErrorHandling(res, scope)
     }
   }
 }

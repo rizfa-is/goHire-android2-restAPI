@@ -1,5 +1,6 @@
 const { createExperienceModul, deleteExperienceModul, updateExperienceModul, getAllExperienceModul, getExperienceByIdModul } = require('../models/experience')
-const { successProjectHandling, errorProjectHandling, errorInternalProjectHandling } = require('../helpers/error-handling')
+const { successGetHandling, successGetByIdHandling, failGetByIdHandling, methodErrorHandling, errorInternalHandling, successCreateHandling, failCreateHandling, successDeleteHandling, failDeleteHandling, successUpdateHandling, failUpdateHandling } = require('../helpers/respons-handling')
+const scope = 'experience'
 
 module.exports = {
   getAllExperience: async (req, res) => {
@@ -32,12 +33,12 @@ module.exports = {
 
       const result = await getAllExperienceModul(searchKey, searchValue, limit, offset)
       if (result.length) {
-        successProjectHandling(res, result)
+        successGetHandling(res, result, scope)
       } else {
-        errorProjectHandling(res)
+        methodErrorHandling(res, scope)
       }
     } catch (err) {
-      errorInternalProjectHandling(res)
+      errorInternalHandling(res)
     }
   },
   getExperienceById: async (req, res) => {
@@ -46,37 +47,25 @@ module.exports = {
 
       const result = await getExperienceByIdModul(ex_id)
       if (result.length) {
-        res.status(200).send({
-          success: true,
-          message: `Experience with id ${ex_id}`,
-          data: result[0]
-        })
+        successGetByIdHandling(res, scope, ex_id, result)
       } else {
-        res.status(404).send({
-          success: false,
-          message: 'Data experience with id ' + ex_id + ' not found'
-        })
+        failGetByIdHandling(res, scope, ex_id)
       }
     } catch (error) {
-      console.log(error)
-      res.status(500).send({
-        success: false,
-        message: 'Internal server error!'
-      })
+      errorInternalHandling(res)
     }
   },
   createExperience: async (req, res) => {
     try {
       const data = req.body
       const result = await createExperienceModul(data)
-
       if (result.affectedRows) {
-        successProjectHandling(res, result)
+        successCreateHandling(res, scope)
       } else {
-        errorProjectHandling(res)
+        failCreateHandling(res, scope)
       }
     } catch (error) {
-      errorInternalProjectHandling(res)
+      errorInternalHandling(res)
     }
   },
   deleteExperience: async (req, res) => {
@@ -87,59 +76,34 @@ module.exports = {
       if (result.length) {
         const result2 = await deleteExperienceModul(ex_id)
         if (result2.affectedRows) {
-          res.status(200).send({
-            success: true,
-            message: `Item experience id ${ex_id} has been deleted!`
-          })
+          successDeleteHandling(res, ex_id, scope)
         } else {
-          res.status(404).send({
-            success: false,
-            message: 'Item experience failed to delete!'
-          })
+          failDeleteHandling(res, scope, ex_id)
         }
       } else {
-        res.status(404).send({
-          success: false,
-          message: 'Item experience failed to delete!'
-        })
+        failDeleteHandling(res, scope, ex_id)
       }
     } catch (error) {
-      res.status(400).send({
-        success: false,
-        message: 'Data experience not found'
-      })
+      methodErrorHandling(res, scope)
     }
   },
   updateExperience: async (req, res) => {
     try {
       const { ex_id } = req.params
       const data = req.body
-
       const result = await getExperienceByIdModul(ex_id)
       if (result.length) {
         const result2 = await updateExperienceModul(ex_id, data)
         if (result2.affectedRows) {
-          res.status(200).send({
-            success: true,
-            message: `Item experience id ${ex_id} has been updated!`
-          })
+          successUpdateHandling(res, ex_id, scope)
         } else {
-          res.status(404).send({
-            success: false,
-            message: 'Item experience failed to updated!'
-          })
+          failUpdateHandling(res, scope)
         }
       } else {
-        res.status(404).send({
-          success: false,
-          message: 'Item experience failed to updated!'
-        })
+        failUpdateHandling(res, scope)
       }
     } catch (error) {
-      res.status(400).send({
-        success: false,
-        message: 'Data experience not found'
-      })
+      methodErrorHandling(res, scope)
     }
   }
 }

@@ -1,8 +1,12 @@
 require('dotenv')
 const bcrypt = require('bcrypt')
 const { createAccountModul, updateAccountModul, deleteAccountModul, checkExistedEmailModul } = require('../models/account')
-const { successRegisterHandling, errorRegisterHandling, errorInternalHandling } = require('../helpers/error-handling')
+const { successRegisterHandling, errorRegisterHandling, errorInternalHandling, successLoginHandling, passwordLoginHandling, emailLoginHandling, methodErrorHandling, failDeleteHandling, successDeleteHandling, successUpdateHandling, failUpdateHandling } = require('../helpers/respons-handling')
 const jwt = require('jsonwebtoken')
+const moment = require('moment')
+const now = moment().format('YYYY-MM-DD HH:mm:ss')
+const scopeEn = 'engineer'
+const scopeCp = 'company'
 
 module.exports = {
   createEngineerAccount: async (req, res) => {
@@ -12,7 +16,7 @@ module.exports = {
       const encrypt = bcrypt.hashSync(ac_password, salt)
 
       const data = {
-        ac_name: ac_name, ac_email: ac_email, ac_phone: ac_phone, ac_password: encrypt, ac_level: 'Engineer'
+        ac_name: ac_name, ac_email: ac_email, ac_phone: ac_phone, ac_password: encrypt, ac_level: 'Engineer', ac_created_at: now, ac_updated_at: now
       }
       const checkEmail = await checkExistedEmailModul(ac_email)
       if (checkEmail.length > 0) {
@@ -31,7 +35,7 @@ module.exports = {
       const salt = bcrypt.genSaltSync(10)
       const encrypt = bcrypt.hashSync(ac_password, salt)
       const data = {
-        ac_name: ac_name, ac_email: ac_email, ac_phone: ac_phone, ac_password: encrypt, ac_level: 'Company'
+        ac_name: ac_name, ac_email: ac_email, ac_phone: ac_phone, ac_password: encrypt, ac_level: 'Company', ac_created_at: now, ac_updated_at: now
       }
 
       const checkEmail = await checkExistedEmailModul(ac_email)
@@ -55,26 +59,17 @@ module.exports = {
       const salt = bcrypt.genSaltSync(10)
       const encrypt = bcrypt.hashSync(ac_password, salt)
       const data = {
-        ac_name: ac_name, ac_email: ac_email, ac_phone: ac_phone, ac_password: encrypt
+        ac_name: ac_name, ac_email: ac_email, ac_phone: ac_phone, ac_password: encrypt, ac_updated_at: now
       }
 
       const result = await updateAccountModul(ac_id, req, data, 'Engineer', en_job_title, en_location, en_job_type, en_desc)
       if (result.affectedRows) {
-        res.status(200).send({
-          success: true,
-          message: `Item project id ${ac_id} has been updated!`
-        })
+        successUpdateHandling(res, ac_id, scopeEn)
       } else {
-        res.status(404).send({
-          success: false,
-          message: 'Item project failed to updated!'
-        })
+        failUpdateHandling(res, scopeEn, ac_id)
       }
     } catch (error) {
-      res.status(400).send({
-        success: false,
-        message: 'Data project not found'
-      })
+      methodErrorHandling(res, scopeEn)
     }
   },
   updateCompanyAccount: async (req, res) => {
@@ -87,72 +82,43 @@ module.exports = {
       const salt = bcrypt.genSaltSync(10)
       const encrypt = bcrypt.hashSync(ac_password, salt)
       const data = {
-        ac_name: ac_name, ac_email: ac_email, ac_password: encrypt
+        ac_name: ac_name, ac_email: ac_email, ac_password: encrypt, ac_updated_at: now
       }
 
       const result = await updateAccountModul(ac_id, req, data, 'Company', cp_company, cp_position, cp_field, cp_location)
       if (result.affectedRows) {
-        res.status(200).send({
-          success: true,
-          message: `Item project id ${ac_id} has been updated!`
-        })
+        successUpdateHandling(res, ac_id, scopeCp)
       } else {
-        res.status(404).send({
-          success: false,
-          message: 'Item project failed to updated!'
-        })
+        failUpdateHandling(res, scopeCp, ac_id)
       }
     } catch (error) {
-      res.status(400).send({
-        success: false,
-        message: 'Data project not found'
-      })
+      methodErrorHandling(res, scopeCp)
     }
   },
   deleteEngineerAccount: async (req, res) => {
     try {
       const { ac_id } = req.params
-
       const result = await deleteAccountModul(ac_id, 'Engineer')
       if (result.affectedRows) {
-        res.status(200).send({
-          success: true,
-          message: `Item project id ${ac_id} has been deleted!`
-        })
+        successDeleteHandling(res, ac_id, scopeEn)
       } else {
-        res.status(404).send({
-          success: false,
-          message: 'Item project failed to delete!'
-        })
+        failDeleteHandling(res, scopeEn, ac_id)
       }
     } catch (error) {
-      res.status(400).send({
-        success: false,
-        message: 'Data project not found'
-      })
+      methodErrorHandling(res, scopeEn)
     }
   },
   deleteCompanyAccount: async (req, res) => {
     try {
       const { ac_id } = req.params
-
       const result = await deleteAccountModul(ac_id, 'Company')
       if (result.affectedRows) {
-        res.status(200).send({
-          success: true,
-          message: `Item project id ${ac_id} has been deleted!`
-        })
+        successDeleteHandling(res, ac_id, scopeCp)
       } else {
-        res.status(404).send({
-          success: false,
-          message: 'Item project failed to delete!'
-        })
+        failDeleteHandling(res, scopeCp, ac_id)
       }
     } catch (error) {
-      res.status(400).send({
-        success: false,
-        message: 'Data project not found'
-      })
+      methodErrorHandling(res, scopeCp)
     }
   },
   loginAccount: async (req, res) => {
@@ -172,28 +138,15 @@ module.exports = {
 
           const token = jwt.sign(payload, process.env.JWT_KEY, { expiresIn: '1h' })
           payload = { ...payload, token }
-          res.status(200).send({
-            success: true,
-            message: 'Successfully Login!',
-            data: payload
-          })
+          successLoginHandling(res, payload)
         } else {
-          res.status(200).send({
-            success: true,
-            message: 'Wrong Password!'
-          })
+          passwordLoginHandling(res)
         }
       } else {
-        res.status(400).send({
-          success: false,
-          message: 'Email/Account not registered!'
-        })
+        emailLoginHandling(res)
       }
     } catch (error) {
-      res.status(500).send({
-        success: false,
-        message: 'Bad request'
-      })
+      errorInternalHandling(res)
     }
   }
 }

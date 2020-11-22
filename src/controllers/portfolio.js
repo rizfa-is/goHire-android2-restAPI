@@ -1,5 +1,6 @@
 const { createPortfolioModul, deletePortfolioModul, updatePortfolioModul, getAllPortfolioModul, getPortfolioByIdModul } = require('../models/portfolio')
-const { successProjectHandling, errorProjectHandling, errorInternalProjectHandling } = require('../helpers/error-handling')
+const { successGetHandling, successGetByIdHandling, failGetByIdHandling, methodErrorHandling, errorInternalHandling, successCreateHandling, failCreateHandling, successDeleteHandling, failDeleteHandling, successUpdateHandling, failUpdateHandling } = require('../helpers/respons-handling')
+const scope = 'portfolio'
 
 module.exports = {
   getAllPortfolio: async (req, res) => {
@@ -32,37 +33,25 @@ module.exports = {
 
       const result = await getAllPortfolioModul(searchKey, searchValue, limit, offset)
       if (result.length) {
-        successProjectHandling(res, result)
+        successGetHandling(res, result, scope)
       } else {
-        errorProjectHandling(res)
+        methodErrorHandling(res, scope)
       }
-    } catch (err) {
-      errorInternalProjectHandling(res)
+    } catch (error) {
+      errorInternalHandling(res)
     }
   },
   getPortfolioById: async (req, res) => {
     try {
       const { pr_id } = req.params
-
       const result = await getPortfolioByIdModul(pr_id)
       if (result.length) {
-        res.status(200).send({
-          success: true,
-          message: `Portfolio with id ${pr_id}`,
-          data: result[0]
-        })
+        successGetByIdHandling(res, scope, pr_id, result)
       } else {
-        res.status(404).send({
-          success: false,
-          message: 'Data portfolio with id ' + pr_id + ' not found'
-        })
+        failGetByIdHandling(res, scope, pr_id)
       }
     } catch (error) {
-      console.log(error)
-      res.status(500).send({
-        success: false,
-        message: 'Internal server error!'
-      })
+      errorInternalHandling(res)
     }
   },
   createPortfolio: async (req, res) => {
@@ -73,45 +62,31 @@ module.exports = {
         pr_img: req.files === undefined ? '' : req.files.pr_img[0].filename
       }
       const result = await createPortfolioModul(setData)
-
       if (result.affectedRows) {
-        successProjectHandling(res, result)
+        successCreateHandling(res, scope)
       } else {
-        errorProjectHandling(res)
+        failCreateHandling(res, scope)
       }
     } catch (error) {
-      errorInternalProjectHandling(res)
+      errorInternalHandling(res)
     }
   },
   deletePortfolio: async (req, res) => {
     try {
       const { pr_id } = req.params
-
       const result = await getPortfolioByIdModul(pr_id)
       if (result.length) {
         const result2 = await deletePortfolioModul(pr_id)
         if (result2.affectedRows) {
-          res.status(200).send({
-            success: true,
-            message: `Item portfolio id ${pr_id} has been deleted!`
-          })
+          successDeleteHandling(res, pr_id, scope)
         } else {
-          res.status(404).send({
-            success: false,
-            message: 'Item portfolio failed to delete!'
-          })
+          failDeleteHandling(res, scope, pr_id)
         }
       } else {
-        res.status(404).send({
-          success: false,
-          message: 'Item portfolio failed to delete!'
-        })
+        failDeleteHandling(res, scope, pr_id)
       }
     } catch (error) {
-      res.status(400).send({
-        success: false,
-        message: 'Data portfolio not found'
-      })
+      methodErrorHandling(res, scope)
     }
   },
   updatePortfolio: async (req, res) => {
@@ -122,32 +97,19 @@ module.exports = {
         ...data,
         pr_img: req.files === undefined ? '' : req.files.pr_img[0].filename
       }
-
       const result = await getPortfolioByIdModul(pr_id)
       if (result.length) {
         const result2 = await updatePortfolioModul(pr_id, setData)
         if (result2.affectedRows) {
-          res.status(200).send({
-            success: true,
-            message: `Item portfolio id ${pr_id} has been updated!`
-          })
+          successUpdateHandling(res, pr_id, scope)
         } else {
-          res.status(404).send({
-            success: false,
-            message: 'Item portfolio failed to updated!'
-          })
+          failUpdateHandling(res, scope)
         }
       } else {
-        res.status(404).send({
-          success: false,
-          message: 'Item portfolio failed to updated!'
-        })
+        failUpdateHandling(res, scope)
       }
     } catch (error) {
-      res.status(400).send({
-        success: false,
-        message: 'Data portfolio not found'
-      })
+      methodErrorHandling(res, scope)
     }
   }
 }

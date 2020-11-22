@@ -1,5 +1,8 @@
 const { getAllProjectModul, getProjectByIdModul, createProjectModul, deleteProjectModul, updateProjectModul } = require('../models/project')
-const { successProjectHandling, errorProjectHandling, errorInternalProjectHandling } = require('../helpers/error-handling')
+const { successGetHandling, successGetByIdHandling, failGetByIdHandling, methodErrorHandling, errorInternalHandling, successCreateHandling, failCreateHandling, successDeleteHandling, failDeleteHandling, successUpdateHandling, failUpdateHandling } = require('../helpers/respons-handling')
+const moment = require('moment')
+const now = moment().format('YYYY-MM-DD HH:mm:ss')
+const scope = 'project'
 
 module.exports = {
   getAllProject: async (req, res) => {
@@ -32,37 +35,25 @@ module.exports = {
 
       const result = await getAllProjectModul(searchKey, searchValue, limit, offset)
       if (result.length) {
-        successProjectHandling(res, result)
+        successGetHandling(res, result, scope)
       } else {
-        errorProjectHandling(res)
+        methodErrorHandling(res, scope)
       }
-    } catch (err) {
-      errorInternalProjectHandling(res)
+    } catch (error) {
+      errorInternalHandling(res)
     }
   },
   getProjectById: async (req, res) => {
     try {
       const { pj_id } = req.params
-
       const result = await getProjectByIdModul(pj_id)
       if (result.length) {
-        res.status(200).send({
-          success: true,
-          message: `Project with id ${pj_id}`,
-          data: result[0]
-        })
+        successGetByIdHandling(res, scope, pj_id, result)
       } else {
-        res.status(404).send({
-          success: false,
-          message: 'Data project with id ' + pj_id + ' not found'
-        })
+        failGetByIdHandling(res, scope, pj_id)
       }
     } catch (error) {
-      console.log(error)
-      res.status(500).send({
-        success: false,
-        message: 'Internal server error!'
-      })
+      errorInternalHandling(res)
     }
   },
   createProject: async (req, res) => {
@@ -70,48 +61,36 @@ module.exports = {
       const data = req.body
       const setData = {
         ...data,
-        pj_img: req.files === undefined ? '' : req.files.pj_img[0].filename
+        pj_img: req.files === undefined ? '' : req.files.pj_img[0].filename,
+        pj_created_at: now,
+        pj_updated_at: now
       }
       const result = await createProjectModul(setData)
-
       if (result.affectedRows) {
-        successProjectHandling(res, result)
+        successCreateHandling(res, scope)
       } else {
-        errorProjectHandling(res)
+        failCreateHandling(res, scope)
       }
     } catch (error) {
-      errorInternalProjectHandling(res)
+      errorInternalHandling(res)
     }
   },
   deleteProject: async (req, res) => {
     try {
       const { pj_id } = req.params
-
       const result = await getProjectByIdModul(pj_id)
       if (result.length) {
         const result2 = await deleteProjectModul(pj_id)
         if (result2.affectedRows) {
-          res.status(200).send({
-            success: true,
-            message: `Item project id ${pj_id} has been deleted!`
-          })
+          successDeleteHandling(res, pj_id, scope)
         } else {
-          res.status(404).send({
-            success: false,
-            message: 'Item project failed to delete!'
-          })
+          failDeleteHandling(res, scope, pj_id)
         }
       } else {
-        res.status(404).send({
-          success: false,
-          message: 'Item project failed to delete!'
-        })
+        failDeleteHandling(res, scope, pj_id)
       }
     } catch (error) {
-      res.status(400).send({
-        success: false,
-        message: 'Data project not found'
-      })
+      methodErrorHandling(res, scope)
     }
   },
   updateProject: async (req, res) => {
@@ -120,34 +99,22 @@ module.exports = {
       const data = req.body
       const setData = {
         ...data,
-        pj_img: req.files === undefined ? '' : req.files.pj_img[0].filename
+        pj_img: req.files === undefined ? '' : req.files.pj_img[0].filename,
+        pj_updated_at: now
       }
-
       const result = await getProjectByIdModul(pj_id)
       if (result.length) {
         const result2 = await updateProjectModul(pj_id, setData)
         if (result2.affectedRows) {
-          res.status(200).send({
-            success: true,
-            message: `Item project id ${pj_id} has been deleted!`
-          })
+          successUpdateHandling(res, pj_id, scope)
         } else {
-          res.status(404).send({
-            success: false,
-            message: 'Item project failed to delete!'
-          })
+          failUpdateHandling(res, scope)
         }
       } else {
-        res.status(404).send({
-          success: false,
-          message: 'Item project failed to delete!'
-        })
+        failUpdateHandling(res, scope)
       }
     } catch (error) {
-      res.status(400).send({
-        success: false,
-        message: 'Data project not found'
-      })
+      methodErrorHandling(res, scope)
     }
   }
 }

@@ -46,7 +46,6 @@ module.exports = {
       WHERE pr_id = ${prId}`
       db.query(query, (err, result, _fields) => {
         if (!err) {
-          console.log(result)
           resolve(result)
         } else {
           reject(new Error(err))
