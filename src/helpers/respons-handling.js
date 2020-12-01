@@ -1,5 +1,4 @@
 module.exports = {
-  // Register Handling
   successRegisterHandling: (res, result) => {
     res.status(200).send({
       success: true,
@@ -13,7 +12,6 @@ module.exports = {
       message: 'Unfortunely, Email already exist!'
     })
   },
-  // Login Handling
   successLoginHandling: (res, result) => {
     res.status(200).send({
       success: true,
@@ -41,7 +39,7 @@ module.exports = {
     })
   },
   successGetByIdHandling: (res, scope, id, result) => {
-    res.status(404).send({
+    res.status(200).send({
       success: true,
       message: `Horay, Data ${scope} with id ${id} successfully loaded!`,
       database: result
@@ -53,7 +51,6 @@ module.exports = {
       message: `Horay, Data ${scope} with id ${id} successfully loaded!`
     })
   },
-  // Create Handling
   successCreateHandling: (res, scope) => {
     res.status(200).send({
       success: true,
@@ -66,7 +63,6 @@ module.exports = {
       message: `Unfortunely, ${scope} failed to added!`
     })
   },
-  // Update Handling
   successUpdateHandling: (res, id, scope) => {
     res.status(200).send({
       success: true,
@@ -79,7 +75,6 @@ module.exports = {
       message: `Unfortunely, Item ${scope} failed to updated!`
     })
   },
-  // Delete Handling
   successDeleteHandling: (res, id, scope) => {
     res.status(200).send({
       success: true,
@@ -92,7 +87,6 @@ module.exports = {
       message: `Unfortunely, Item ${scope} id ${id} failed to deleted!`
     })
   },
-  // Other Handling
   methodErrorHandling: (res, scope) => {
     res.status(400).send({
       success: false,
@@ -105,21 +99,17 @@ module.exports = {
       message: 'Oops, Internal Server Error!'
     })
   },
-  // GET Engineer Nested
   nestedJSONObjectEngineer: (res, values, key, id) => {
-    // accumulate database
-    const result = values.reduce((accumulate, item) => {
-      // determine key group
+    const rest = values.reduce((accumulate, item) => {
       if (accumulate[item.ac_name]) {
-        // create variable group of engineer's name
         const group = accumulate[item.ac_name]
-        // check if array containing ability/skill
+
         if (Array.isArray(group.skill)) {
           group.skill.push(item.skill)
         } else {
           group.skill = [group.skill, item.skill]
         }
-        // check if array containing portfolio
+
         if (Array.isArray(group.portfolio)) {
           group.portfolio.push(item.portfolio)
         } else {
@@ -131,6 +121,7 @@ module.exports = {
       return accumulate
     }, {})
 
+    const result = rest
     let data = { }
     if (key === 0) {
       data = {
@@ -149,15 +140,11 @@ module.exports = {
     res.status(200).json(data)
     res.end()
   },
-  // GET Engineer Nested
   nestedJSONObjectCompany: (res, values, key, id) => {
-    // accumulate database
     const result = values.reduce((accumulate, item) => {
-      // determine key group
       if (accumulate[item.ac_name]) {
-        // create variable group of company's name
         const group = accumulate[item.ac_name]
-        // check if array containing project
+
         if (Array.isArray(group.project)) {
           group.project.push(item.project)
         } else {

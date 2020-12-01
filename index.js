@@ -1,26 +1,23 @@
-// require('body-parser').config()
 require('dotenv').config()
 const bodyParser = require('body-parser')
 const express = require('express')
 const app = express()
-const router = require('./src/routers/account')
-const router2 = require('./src/routers/project')
-const router3 = require('./src/routers/hire')
-const router4 = require('./src/routers/engineer')
-const router5 = require('./src/routers/ability')
-const router6 = require('./src/routers/experience')
-const router7 = require('./src/routers/portfolio')
-const router8 = require('./src/routers/company')
+const acccount = require('./src/routers/account')
+const project = require('./src/routers/project')
+const hire = require('./src/routers/hire')
+const engineer = require('./src/routers/engineer')
+const ability = require('./src/routers/ability')
+const experience = require('./src/routers/experience')
+const portfolio = require('./src/routers/portfolio')
+const company = require('./src/routers/company')
 const morgan = require('morgan')
 const cors = require('cors')
 const port = process.env.PORT
 
-// Middleware
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(morgan('dev'))
 app.use(cors())
 
-// Config CORS
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*')
   res.header(
@@ -30,22 +27,14 @@ app.use((req, res, next) => {
   next()
 })
 
-// Account Login, Register, Setting
-app.use('/', router)
-// Project
-app.use('/', router2)
-// Hire
-app.use('/', router3)
-// Engineer
-app.use('/', router4)
-// Ability
-app.use('/', router5)
-// Experience
-app.use('/', router6)
-// Portfolio
-app.use('/', router7)
-// Company
-app.use('/', router8)
+app.use('/', acccount)
+app.use('/', project)
+app.use('/', hire)
+app.use('/', engineer)
+app.use('/', ability)
+app.use('/', experience)
+app.use('/', portfolio)
+app.use('/', company)
 
 app.use('/image', express.static('./uploads'))
 

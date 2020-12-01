@@ -1,4 +1,4 @@
-const { getAllEngineerModul, getEngineerByIdModul } = require('../models/engineer')
+const { getAllEngineerModel, getEngineerByIdModel } = require('../models/engineer')
 const { nestedJSONObjectEngineer, errorInternalHandling, failGetByIdHandling, methodErrorHandling } = require('../helpers/respons-handling')
 const scope = 'engineer'
 
@@ -36,7 +36,7 @@ module.exports = {
       }
 
       const offset = (page - 1) * limit
-      const result = await getAllEngineerModul(searchKey, searchValue, limit, offset, filter)
+      const result = await getAllEngineerModel(searchKey, searchValue, limit, offset, filter)
       if (result.length) {
         nestedJSONObjectEngineer(res, result, 0, 0)
       } else {
@@ -48,12 +48,12 @@ module.exports = {
   },
   getEngineerById: async (req, res) => {
     try {
-      const { en_id } = req.params
-      const result = await getEngineerByIdModul(en_id)
+      const { enId } = req.params
+      const result = await getEngineerByIdModel(enId)
       if (result.length) {
-        nestedJSONObjectEngineer(res, result, 1, en_id)
+        nestedJSONObjectEngineer(res, result, 1, enId)
       } else {
-        failGetByIdHandling(res, scope, en_id)
+        failGetByIdHandling(res, scope, enId)
       }
     } catch (error) {
       errorInternalHandling(res)

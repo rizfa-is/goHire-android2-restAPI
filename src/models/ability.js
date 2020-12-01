@@ -1,9 +1,11 @@
 const db = require('../helpers/db')
 
 module.exports = {
-  getAllAbilityModul: () => {
+  getAllAbilityModel: (searchKey, searchValue, limit, offset) => {
     return new Promise((resolve, reject) => {
-      const query = 'SELECT * FROM ability ORDER BY ab_id'
+      const query = `SELECT * FROM ability 
+      WHERE ${searchKey} LIKE '%${searchValue}%' 
+      LIMIT ${limit} OFFSET ${offset}`
       db.query(query, (err, result, fields) => {
         if (!err) {
           resolve(result)
@@ -13,7 +15,7 @@ module.exports = {
       })
     })
   },
-  getAbilityByIdModul: (abId) => {
+  getAbilityByIdModel: (abId) => {
     return new Promise((resolve, reject) => {
       const query = `SELECT * FROM ability WHERE ab_id = ${abId} ORDER BY ability.en_id`
       db.query(query, (err, result, fields) => {
@@ -25,7 +27,7 @@ module.exports = {
       })
     })
   },
-  createAbilityModul: (data) => {
+  createAbilityModel: (data) => {
     return new Promise((resolve, reject) => {
       const query = 'INSERT INTO ability SET ?'
       db.query(query, data, async (err, result, field) => {
@@ -37,7 +39,7 @@ module.exports = {
       })
     })
   },
-  deleteAbilityModul: (abId) => {
+  deleteAbilityModel: (abId) => {
     return new Promise((resolve, reject) => {
       const query = `DELETE FROM ability 
       WHERE ab_id = ${abId}`
@@ -50,7 +52,7 @@ module.exports = {
       })
     })
   },
-  updateAbilityModul: (abId, data) => {
+  updateAbilityModel: (abId, data) => {
     return new Promise((resolve, reject) => {
       const query = `UPDATE ability SET ?
       WHERE ab_id = ${abId}`

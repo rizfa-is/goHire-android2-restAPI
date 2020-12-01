@@ -1,4 +1,4 @@
-const { createHireModul, getAllHireModul, getHireByIdModul, deleteHireModul, updateHireModul } = require('../models/hire')
+const { createHireModel, getAllHireModel, getHireByIdModel, deleteHireModel, updateHireModel } = require('../models/hire')
 const { successGetHandling, successGetByIdHandling, failGetByIdHandling, methodErrorHandling, errorInternalHandling, successCreateHandling, failCreateHandling, successDeleteHandling, failDeleteHandling, successUpdateHandling, failUpdateHandling } = require('../helpers/respons-handling')
 const moment = require('moment')
 const now = moment().format('YYYY-MM-DD HH:mm:ss')
@@ -33,7 +33,7 @@ module.exports = {
 
       const offset = (page - 1) * limit
 
-      const result = await getAllHireModul(searchKey, searchValue, limit, offset)
+      const result = await getAllHireModel(searchKey, searchValue, limit, offset)
       if (result.length) {
         successGetHandling(res, result, scope)
       } else {
@@ -45,13 +45,13 @@ module.exports = {
   },
   getHireById: async (req, res) => {
     try {
-      const { hr_id } = req.params
+      const { hrId } = req.params
 
-      const result = await getHireByIdModul(hr_id)
+      const result = await getHireByIdModel(hrId)
       if (result.length) {
-        successGetByIdHandling(res, scope, hr_id, result)
+        successGetByIdHandling(res, scope, hrId, result)
       } else {
-        failGetByIdHandling(res, scope, hr_id)
+        failGetByIdHandling(res, scope, hrId)
       }
     } catch (error) {
       errorInternalHandling(res)
@@ -64,7 +64,7 @@ module.exports = {
         ...reqBody,
         hr_created_at: now
       }
-      const result = await createHireModul(data)
+      const result = await createHireModel(data)
       if (result.affectedRows) {
         successCreateHandling(res, scope)
       } else {
@@ -76,18 +76,18 @@ module.exports = {
   },
   deleteHire: async (req, res) => {
     try {
-      const { hr_id } = req.params
+      const { hrId } = req.params
 
-      const result = await getHireByIdModul(hr_id)
+      const result = await getHireByIdModel(hrId)
       if (result.length) {
-        const result2 = await deleteHireModul(hr_id)
+        const result2 = await deleteHireModel(hrId)
         if (result2.affectedRows) {
-          successDeleteHandling(res, hr_id, scope)
+          successDeleteHandling(res, hrId, scope)
         } else {
-          failDeleteHandling(res, scope, hr_id)
+          failDeleteHandling(res, scope, hrId)
         }
       } else {
-        failDeleteHandling(res, scope, hr_id)
+        failDeleteHandling(res, scope, hrId)
       }
     } catch (error) {
       methodErrorHandling(res, scope)
@@ -95,17 +95,17 @@ module.exports = {
   },
   updateHire: async (req, res) => {
     try {
-      const { hr_id } = req.params
+      const { hrId } = req.params
       const reqBody = req.body
       const data = {
         ...reqBody,
         hr_date_confirm: now
       }
-      const result = await getHireByIdModul(hr_id)
+      const result = await getHireByIdModel(hrId)
       if (result.length) {
-        const result2 = await updateHireModul(hr_id, data)
+        const result2 = await updateHireModel(hrId, data)
         if (result2.affectedRows) {
-          successUpdateHandling(res, hr_id, scope)
+          successUpdateHandling(res, hrId, scope)
         } else {
           failUpdateHandling(res, scope)
         }

@@ -5,8 +5,9 @@ const storage = multer.diskStorage({
     callback(null, './uploads/')
   },
   filename: (req, file, callback) => {
+    const field = req.route.path.split('/')[1]
     const extension = file.originalname.split('.').pop()
-    const fileName = file.fieldname + '-' + Date.now() + '.' + extension
+    const fileName = field + '-' + Date.now() + '.' + extension
     callback(null, fileName)
   }
 })
@@ -21,26 +22,19 @@ const fileFilter = (req, file, callback) => {
 
 const limits = { fileSize: 1024 * 1024 * 1 }
 
-const upload = multer({ storage, fileFilter, limits }).fields([
-  { name: 'pj_img', maxCount: 1 },
-  { name: 'pr_img', maxCount: 1 },
-  { name: 'en_avatar', maxCount: 1 },
-  { name: 'cp_img', maxCount: 1 }
-])
+const upload = multer({ storage, fileFilter, limits }).single('image')
 
 const uploadFilter = (req, res, next) => {
   upload(req, res, function (err) {
     if (err instanceof multer.MulterError) {
-      // A Multer error occurred when uploading.
       res.status(400).send({
         success: false,
-        message: 'A Multer error occurred when uploading.'
+        message: err.message
       })
     } else if (err) {
-      // An unknown error occurred when uploading.
       res.status(400).send({
         success: false,
-        message: 'An unknown error occurred when uploading.'
+        message: err.message
       })
     }
     next()

@@ -1,4 +1,4 @@
-const { createPortfolioModul, deletePortfolioModul, updatePortfolioModul, getAllPortfolioModul, getPortfolioByIdModul } = require('../models/portfolio')
+const { createPortfolioModel, deletePortfolioModel, updatePortfolioModel, getAllPortfolioModel, getPortfolioByIdModel } = require('../models/portfolio')
 const { successGetHandling, successGetByIdHandling, failGetByIdHandling, methodErrorHandling, errorInternalHandling, successCreateHandling, failCreateHandling, successDeleteHandling, failDeleteHandling, successUpdateHandling, failUpdateHandling } = require('../helpers/respons-handling')
 const scope = 'portfolio'
 
@@ -31,7 +31,7 @@ module.exports = {
 
       const offset = (page - 1) * limit
 
-      const result = await getAllPortfolioModul(searchKey, searchValue, limit, offset)
+      const result = await getAllPortfolioModel(searchKey, searchValue, limit, offset)
       if (result.length) {
         successGetHandling(res, result, scope)
       } else {
@@ -43,12 +43,12 @@ module.exports = {
   },
   getPortfolioById: async (req, res) => {
     try {
-      const { pr_id } = req.params
-      const result = await getPortfolioByIdModul(pr_id)
+      const { prId } = req.params
+      const result = await getPortfolioByIdModel(prId)
       if (result.length) {
-        successGetByIdHandling(res, scope, pr_id, result)
+        successGetByIdHandling(res, scope, prId, result)
       } else {
-        failGetByIdHandling(res, scope, pr_id)
+        failGetByIdHandling(res, scope, prId)
       }
     } catch (error) {
       errorInternalHandling(res)
@@ -59,9 +59,9 @@ module.exports = {
       const data = req.body
       const setData = {
         ...data,
-        pr_img: req.files === undefined ? '' : req.files.pr_img[0].filename
+        pr_img: req.files === undefined ? '' : req.file.filename
       }
-      const result = await createPortfolioModul(setData)
+      const result = await createPortfolioModel(setData)
       if (result.affectedRows) {
         successCreateHandling(res, scope)
       } else {
@@ -73,17 +73,17 @@ module.exports = {
   },
   deletePortfolio: async (req, res) => {
     try {
-      const { pr_id } = req.params
-      const result = await getPortfolioByIdModul(pr_id)
+      const { prId } = req.params
+      const result = await getPortfolioByIdModel(prId)
       if (result.length) {
-        const result2 = await deletePortfolioModul(pr_id)
+        const result2 = await deletePortfolioModel(prId)
         if (result2.affectedRows) {
-          successDeleteHandling(res, pr_id, scope)
+          successDeleteHandling(res, prId, scope)
         } else {
-          failDeleteHandling(res, scope, pr_id)
+          failDeleteHandling(res, scope, prId)
         }
       } else {
-        failDeleteHandling(res, scope, pr_id)
+        failDeleteHandling(res, scope, prId)
       }
     } catch (error) {
       methodErrorHandling(res, scope)
@@ -91,17 +91,18 @@ module.exports = {
   },
   updatePortfolio: async (req, res) => {
     try {
-      const { pr_id } = req.params
+      const { prId } = req.params
       const data = req.body
+      const result = await getPortfolioByIdModel(prId)
       const setData = {
         ...data,
-        pr_img: req.files === undefined ? '' : req.files.pr_img[0].filename
+        pr_img: req.file === undefined ? result[0].pr_img : req.file.filename
       }
-      const result = await getPortfolioByIdModul(pr_id)
+
       if (result.length) {
-        const result2 = await updatePortfolioModul(pr_id, setData)
+        const result2 = await updatePortfolioModel(prId, setData)
         if (result2.affectedRows) {
-          successUpdateHandling(res, pr_id, scope)
+          successUpdateHandling(res, prId, scope)
         } else {
           failUpdateHandling(res, scope)
         }

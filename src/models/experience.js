@@ -1,7 +1,7 @@
 const db = require('../helpers/db')
 
 module.exports = {
-  getAllExperienceModul: (searchKey, searchValue, limit, offset) => {
+  getAllExperienceModel: (searchKey, searchValue, limit, offset) => {
     return new Promise((resolve, reject) => {
       const query = `SELECT * FROM experience 
       WHERE ${searchKey} LIKE '%${searchValue}%' 
@@ -15,7 +15,7 @@ module.exports = {
       })
     })
   },
-  getExperienceByIdModul: (exId) => {
+  getExperienceByIdModel: (exId) => {
     return new Promise((resolve, reject) => {
       const query = `SELECT * FROM experience 
       WHERE ex_id = ${exId}`
@@ -28,7 +28,7 @@ module.exports = {
       })
     })
   },
-  createExperienceModul: (data) => {
+  createExperienceModel: (data) => {
     return new Promise((resolve, reject) => {
       const query = 'INSERT INTO experience SET ?'
       db.query(query, data, async (err, result, field) => {
@@ -40,7 +40,7 @@ module.exports = {
       })
     })
   },
-  deleteExperienceModul: (exId) => {
+  deleteExperienceModel: (exId) => {
     return new Promise((resolve, reject) => {
       const query = `DELETE FROM experience 
       WHERE ex_id = ${exId}`
@@ -53,7 +53,7 @@ module.exports = {
       })
     })
   },
-  updateExperienceModul: (exId, data) => {
+  updateExperienceModel: (exId, data) => {
     return new Promise((resolve, reject) => {
       const query = `UPDATE experience SET ?
       WHERE ex_id = ${exId}`

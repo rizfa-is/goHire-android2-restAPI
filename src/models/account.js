@@ -1,20 +1,19 @@
 const db = require('../helpers/db')
-const { createEngineerModul, updateEngineerModul, deleteEngineerModul } = require('./engineer')
-const { createCompanyModul, updateCompanyModul, deleteCompanyModul } = require('./company')
+const { createEngineerModel, updateEngineerModel, deleteEngineerModel, getEngineerByIdModel } = require('./engineer')
+const { createCompanyModel, updateCompanyModel, deleteCompanyModel, getCompanyByIdModel } = require('./company')
+const { createAdminModel, updateAdminModel, deleteAdminModel, getAdminByIdModel } = require('./admin')
 const moment = require('moment')
 const now = moment().format('YYYY-MM-DD HH:mm:ss')
 
 module.exports = {
-  // === Login Page ===
-  // Register
-  createAccountModul: (data, level, company, position) => {
+  createAccountModel: (data, level, company, position) => {
     return new Promise((resolve, reject) => {
       const query = 'INSERT INTO account SET ?'
       db.query(query, data, async (err, result, field) => {
         if (!err) {
           let newData = { }
           if (level === 'Engineer') {
-            await createEngineerModul({
+            await createEngineerModel({
               ac_id: result.insertId,
               en_created_at: now,
               en_updated_at: now
@@ -26,8 +25,8 @@ module.exports = {
               en_updated_at: now
             }
             delete newData.ac_password
-          } else {
-            await createCompanyModul({
+          } else if (level === 'Company') {
+            await createCompanyModel({
               ac_id: result.insertId,
               cp_company: company,
               cp_position: position,
@@ -43,6 +42,18 @@ module.exports = {
               cp_updated_at: now
             }
             delete newData.ac_password
+          } else if (level === 'Admin') {
+            await createAdminModel({
+              ac_id: result.insertId,
+              ad_created_at: now,
+              ad_updated_at: now
+            })
+            newData = {
+              id: result.insertId,
+              ...data,
+              ad_created_at: now,
+              ad_updated_at: now
+            }
           }
           resolve(newData)
         } else {
@@ -51,29 +62,32 @@ module.exports = {
       })
     })
   },
-  updateAccountModul: (acId, req, data, level, jobTitle, location, jobType, desc) => {
+  updateAccountModel: (acId, req, data, level, dataAdv) => {
     return new Promise((resolve, reject) => {
       const query = `UPDATE account SET ?
       WHERE ac_id = ${acId}`
       db.query(query, data, async (err, result, field) => {
         if (!err) {
           if (level === 'Engineer') {
-            await updateEngineerModul(acId, {
-              en_job_title: jobTitle,
-              en_location: location,
-              en_job_type: jobType,
-              en_desc: desc,
-              en_avatar: req.files === undefined ? '' : req.files.en_avatar[0].filename,
+            const getEng = await getEngineerByIdModel(acId)
+            await updateEngineerModel(acId, {
+              ...dataAdv,
+              en_avatar: req.file === undefined ? getEng[0].en_avatar : req.file.filename,
               en_updated_at: now
             })
-          } else {
-            await updateCompanyModul(acId, {
-              cp_company: jobTitle,
-              cp_position: location,
-              cp_field: jobType,
-              cp_location: desc,
-              cp_img: req.files === undefined ? '' : req.files.cp_img[0].filename,
+          } else if (level === 'Company') {
+            const getCp = await getCompanyByIdModel(acId)
+            await updateCompanyModel(acId, {
+              ...dataAdv,
+              cp_img: req.file === undefined ? getCp[0].cp_img : req.file.filename,
               cp_updated_at: now
+            })
+          } else if (level === 'Admin') {
+            const getAd = await getAdminByIdModel(acId)
+            await updateAdminModel(acId, {
+              ...dataAdv,
+              ad_avatar: req.file === undefined ? getAd[0].ad_avatar : req.file.filename,
+              ad_updated_at: now
             })
           }
           resolve(result)
@@ -83,16 +97,18 @@ module.exports = {
       })
     })
   },
-  deleteAccountModul: (acId, level) => {
+  deleteAccountModel: (acId, level) => {
     return new Promise((resolve, reject) => {
       const query = `DELETE FROM account 
       WHERE ac_id = ${acId}`
       db.query(query, async (err, result, _fields) => {
         if (!err) {
           if (level === 'Engineer') {
-            await deleteEngineerModul(acId)
-          } else {
-            await deleteCompanyModul(acId)
+            await deleteEngineerModel(acId)
+          } else if (level === 'Company') {
+            await deleteCompanyModel(acId)
+          } else if (level === 'Admin') {
+            await deleteAdminModel(acId)
           }
           resolve(result)
         } else {
@@ -101,7 +117,7 @@ module.exports = {
       })
     })
   },
-  checkExistedEmailModul: (acEmail) => {
+  checkExistedEmailModel: (acEmail) => {
     return new Promise((resolve, reject) => {
       const query = `SELECT * FROM account 
       WHERE ac_email = '${acEmail}'`

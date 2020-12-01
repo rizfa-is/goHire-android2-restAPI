@@ -1,11 +1,37 @@
-const { createAbilityModul, getAllAbilityModul, getAbilityByIdModul, deleteAbilityModul, updateAbilityModul } = require('../models/ability')
+const { createAbilityModel, getAllAbilityModel, getAbilityByIdModel, deleteAbilityModel, updateAbilityModel } = require('../models/ability')
 const { successGetHandling, successGetByIdHandling, failGetByIdHandling, methodErrorHandling, errorInternalHandling, successCreateHandling, failCreateHandling, successDeleteHandling, failDeleteHandling, successUpdateHandling, failUpdateHandling } = require('../helpers/respons-handling')
 const scope = 'ability'
 
 module.exports = {
   getAllAbility: async (req, res) => {
     try {
-      const result = await getAllAbilityModul()
+      let { search, limit, page } = req.query
+      let searchKey = ''
+      let searchValue = ''
+
+      if (typeof search === 'object') {
+        searchKey = Object.keys(search)[0]
+        searchValue = Object.values(search)[0]
+      } else {
+        searchKey = 'ab_name'
+        searchValue = search || ''
+      }
+
+      if (!limit) {
+        limit = 50
+      } else {
+        limit = parseInt(limit)
+      }
+
+      if (!page) {
+        page = 1
+      } else {
+        page = parseInt(page)
+      }
+
+      const offset = (page - 1) * limit
+
+      const result = await getAllAbilityModel(searchKey, searchValue, limit, offset)
       if (result.length) {
         successGetHandling(res, result, scope)
       } else {
@@ -17,12 +43,12 @@ module.exports = {
   },
   getAbilityById: async (req, res) => {
     try {
-      const { ab_id } = req.params
-      const result = await getAbilityByIdModul(ab_id)
+      const { abId } = req.params
+      const result = await getAbilityByIdModel(abId)
       if (result.length) {
-        successGetByIdHandling(res, scope, ab_id, result)
+        successGetByIdHandling(res, scope, abId, result)
       } else {
-        failGetByIdHandling(res, scope, ab_id)
+        failGetByIdHandling(res, scope, abId)
       }
     } catch (error) {
       errorInternalHandling(res)
@@ -31,7 +57,7 @@ module.exports = {
   createAbility: async (req, res) => {
     try {
       const data = req.body
-      const result = await createAbilityModul(data)
+      const result = await createAbilityModel(data)
       if (result.affectedRows) {
         successCreateHandling(res, scope)
       } else {
@@ -43,17 +69,17 @@ module.exports = {
   },
   deleteAbility: async (req, res) => {
     try {
-      const { ab_id } = req.params
-      const result = await getAllAbilityModul(ab_id)
+      const { abId } = req.params
+      const result = await getAllAbilityModel(abId)
       if (result.length) {
-        const result2 = await deleteAbilityModul(ab_id)
+        const result2 = await deleteAbilityModel(abId)
         if (result2.affectedRows) {
-          successDeleteHandling(res, ab_id, scope)
+          successDeleteHandling(res, abId, scope)
         } else {
-          failDeleteHandling(res, scope, ab_id)
+          failDeleteHandling(res, scope, abId)
         }
       } else {
-        failDeleteHandling(res, scope, ab_id)
+        failDeleteHandling(res, scope, abId)
       }
     } catch (error) {
       methodErrorHandling(res, scope)
@@ -61,13 +87,13 @@ module.exports = {
   },
   updateAbility: async (req, res) => {
     try {
-      const { ab_id } = req.params
+      const { abId } = req.params
       const data = req.body
-      const result = await getAbilityByIdModul(ab_id)
+      const result = await getAbilityByIdModel(abId)
       if (result.length) {
-        const result2 = await updateAbilityModul(ab_id, data)
+        const result2 = await updateAbilityModel(abId, data)
         if (result2.affectedRows) {
-          successUpdateHandling(res, ab_id, scope)
+          successUpdateHandling(res, abId, scope)
         } else {
           failUpdateHandling(res, scope)
         }

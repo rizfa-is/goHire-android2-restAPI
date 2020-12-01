@@ -1,7 +1,7 @@
 const db = require('../helpers/db')
 
 module.exports = {
-  getAllHireModul: (searchKey, searchValue, limit, offset) => {
+  getAllHireModel: (searchKey, searchValue, limit, offset) => {
     return new Promise((resolve, reject) => {
       const query = `SELECT * FROM hire 
       WHERE ${searchKey} LIKE '%${searchValue}%' 
@@ -15,7 +15,7 @@ module.exports = {
       })
     })
   },
-  getHireByIdModul: (hrId) => {
+  getHireByIdModel: (hrId) => {
     return new Promise((resolve, reject) => {
       const query = `SELECT * FROM hire 
       WHERE hr_id = ${hrId}`
@@ -28,7 +28,7 @@ module.exports = {
       })
     })
   },
-  createHireModul: (data) => {
+  createHireModel: (data) => {
     return new Promise((resolve, reject) => {
       const query = 'INSERT INTO hire SET ?'
       db.query(query, data, async (err, result, field) => {
@@ -40,7 +40,7 @@ module.exports = {
       })
     })
   },
-  deleteHireModul: (hrId) => {
+  deleteHireModel: (hrId) => {
     return new Promise((resolve, reject) => {
       const query = `DELETE FROM hire 
       WHERE hr_id = ${hrId}`
@@ -53,7 +53,7 @@ module.exports = {
       })
     })
   },
-  updateHireModul: (hrId, data) => {
+  updateHireModel: (hrId, data) => {
     return new Promise((resolve, reject) => {
       const query = `UPDATE hire SET ?
       WHERE hr_id = ${hrId}`

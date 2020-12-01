@@ -1,4 +1,4 @@
-const { getAllProjectModul, getProjectByIdModul, createProjectModul, deleteProjectModul, updateProjectModul } = require('../models/project')
+const { getAllProjectModel, getProjectByIdModel, createProjectModel, deleteProjectModel, updateProjectModel } = require('../models/project')
 const { successGetHandling, successGetByIdHandling, failGetByIdHandling, methodErrorHandling, errorInternalHandling, successCreateHandling, failCreateHandling, successDeleteHandling, failDeleteHandling, successUpdateHandling, failUpdateHandling } = require('../helpers/respons-handling')
 const moment = require('moment')
 const now = moment().format('YYYY-MM-DD HH:mm:ss')
@@ -33,7 +33,7 @@ module.exports = {
 
       const offset = (page - 1) * limit
 
-      const result = await getAllProjectModul(searchKey, searchValue, limit, offset)
+      const result = await getAllProjectModel(searchKey, searchValue, limit, offset)
       if (result.length) {
         successGetHandling(res, result, scope)
       } else {
@@ -45,12 +45,12 @@ module.exports = {
   },
   getProjectById: async (req, res) => {
     try {
-      const { pj_id } = req.params
-      const result = await getProjectByIdModul(pj_id)
+      const { pjId } = req.params
+      const result = await getProjectByIdModel(pjId)
       if (result.length) {
-        successGetByIdHandling(res, scope, pj_id, result)
+        successGetByIdHandling(res, scope, pjId, result)
       } else {
-        failGetByIdHandling(res, scope, pj_id)
+        failGetByIdHandling(res, scope, pjId)
       }
     } catch (error) {
       errorInternalHandling(res)
@@ -61,11 +61,11 @@ module.exports = {
       const data = req.body
       const setData = {
         ...data,
-        pj_img: req.files === undefined ? '' : req.files.pj_img[0].filename,
+        pj_img: req.files === undefined ? '' : req.file.filename,
         pj_created_at: now,
         pj_updated_at: now
       }
-      const result = await createProjectModul(setData)
+      const result = await createProjectModel(setData)
       if (result.affectedRows) {
         successCreateHandling(res, scope)
       } else {
@@ -77,17 +77,17 @@ module.exports = {
   },
   deleteProject: async (req, res) => {
     try {
-      const { pj_id } = req.params
-      const result = await getProjectByIdModul(pj_id)
+      const { pjId } = req.params
+      const result = await getProjectByIdModel(pjId)
       if (result.length) {
-        const result2 = await deleteProjectModul(pj_id)
+        const result2 = await deleteProjectModel(pjId)
         if (result2.affectedRows) {
-          successDeleteHandling(res, pj_id, scope)
+          successDeleteHandling(res, pjId, scope)
         } else {
-          failDeleteHandling(res, scope, pj_id)
+          failDeleteHandling(res, scope, pjId)
         }
       } else {
-        failDeleteHandling(res, scope, pj_id)
+        failDeleteHandling(res, scope, pjId)
       }
     } catch (error) {
       methodErrorHandling(res, scope)
@@ -95,18 +95,20 @@ module.exports = {
   },
   updateProject: async (req, res) => {
     try {
-      const { pj_id } = req.params
+      const { pjId } = req.params
       const data = req.body
+      const result = await getProjectByIdModel(pjId)
+
       const setData = {
         ...data,
-        pj_img: req.files === undefined ? '' : req.files.pj_img[0].filename,
+        pj_img: req.file === undefined ? result[0].pj_img : req.file.filename,
         pj_updated_at: now
       }
-      const result = await getProjectByIdModul(pj_id)
+
       if (result.length) {
-        const result2 = await updateProjectModul(pj_id, setData)
+        const result2 = await updateProjectModel(pjId, setData)
         if (result2.affectedRows) {
-          successUpdateHandling(res, pj_id, scope)
+          successUpdateHandling(res, pjId, scope)
         } else {
           failUpdateHandling(res, scope)
         }

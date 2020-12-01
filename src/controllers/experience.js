@@ -1,4 +1,4 @@
-const { createExperienceModul, deleteExperienceModul, updateExperienceModul, getAllExperienceModul, getExperienceByIdModul } = require('../models/experience')
+const { createExperienceModel, deleteExperienceModel, updateExperienceModel, getAllExperienceModel, getExperienceByIdModel } = require('../models/experience')
 const { successGetHandling, successGetByIdHandling, failGetByIdHandling, methodErrorHandling, errorInternalHandling, successCreateHandling, failCreateHandling, successDeleteHandling, failDeleteHandling, successUpdateHandling, failUpdateHandling } = require('../helpers/respons-handling')
 const scope = 'experience'
 
@@ -31,7 +31,7 @@ module.exports = {
 
       const offset = (page - 1) * limit
 
-      const result = await getAllExperienceModul(searchKey, searchValue, limit, offset)
+      const result = await getAllExperienceModel(searchKey, searchValue, limit, offset)
       if (result.length) {
         successGetHandling(res, result, scope)
       } else {
@@ -43,13 +43,13 @@ module.exports = {
   },
   getExperienceById: async (req, res) => {
     try {
-      const { ex_id } = req.params
+      const { exId } = req.params
 
-      const result = await getExperienceByIdModul(ex_id)
+      const result = await getExperienceByIdModel(exId)
       if (result.length) {
-        successGetByIdHandling(res, scope, ex_id, result)
+        successGetByIdHandling(res, scope, exId, result)
       } else {
-        failGetByIdHandling(res, scope, ex_id)
+        failGetByIdHandling(res, scope, exId)
       }
     } catch (error) {
       errorInternalHandling(res)
@@ -58,7 +58,7 @@ module.exports = {
   createExperience: async (req, res) => {
     try {
       const data = req.body
-      const result = await createExperienceModul(data)
+      const result = await createExperienceModel(data)
       if (result.affectedRows) {
         successCreateHandling(res, scope)
       } else {
@@ -70,18 +70,18 @@ module.exports = {
   },
   deleteExperience: async (req, res) => {
     try {
-      const { ex_id } = req.params
+      const { exId } = req.params
 
-      const result = await getExperienceByIdModul(ex_id)
+      const result = await getExperienceByIdModel(exId)
       if (result.length) {
-        const result2 = await deleteExperienceModul(ex_id)
+        const result2 = await deleteExperienceModel(exId)
         if (result2.affectedRows) {
-          successDeleteHandling(res, ex_id, scope)
+          successDeleteHandling(res, exId, scope)
         } else {
-          failDeleteHandling(res, scope, ex_id)
+          failDeleteHandling(res, scope, exId)
         }
       } else {
-        failDeleteHandling(res, scope, ex_id)
+        failDeleteHandling(res, scope, exId)
       }
     } catch (error) {
       methodErrorHandling(res, scope)
@@ -89,13 +89,13 @@ module.exports = {
   },
   updateExperience: async (req, res) => {
     try {
-      const { ex_id } = req.params
+      const { exId } = req.params
       const data = req.body
-      const result = await getExperienceByIdModul(ex_id)
+      const result = await getExperienceByIdModel(exId)
       if (result.length) {
-        const result2 = await updateExperienceModul(ex_id, data)
+        const result2 = await updateExperienceModel(exId, data)
         if (result2.affectedRows) {
-          successUpdateHandling(res, ex_id, scope)
+          successUpdateHandling(res, exId, scope)
         } else {
           failUpdateHandling(res, scope)
         }

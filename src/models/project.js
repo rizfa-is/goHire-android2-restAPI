@@ -1,7 +1,7 @@
 const db = require('../helpers/db')
 
 module.exports = {
-  getAllProjectModul: (searchKey, searchValue, limit, offset) => {
+  getAllProjectModel: (searchKey, searchValue, limit, offset) => {
     return new Promise((resolve, reject) => {
       const query = `SELECT * FROM project 
       WHERE ${searchKey} LIKE '%${searchValue}%' 
@@ -15,7 +15,7 @@ module.exports = {
       })
     })
   },
-  getProjectByIdModul: (pjId) => {
+  getProjectByIdModel: (pjId) => {
     return new Promise((resolve, reject) => {
       const query = `SELECT * FROM project 
       WHERE pj_id = ${pjId}`
@@ -28,7 +28,7 @@ module.exports = {
       })
     })
   },
-  createProjectModul: (data) => {
+  createProjectModel: (data) => {
     return new Promise((resolve, reject) => {
       const query = 'INSERT INTO project SET ?'
       db.query(query, data, async (err, result, field) => {
@@ -40,7 +40,7 @@ module.exports = {
       })
     })
   },
-  deleteProjectModul: (pjId) => {
+  deleteProjectModel: (pjId) => {
     return new Promise((resolve, reject) => {
       const query = `DELETE FROM project 
       WHERE pj_id = ${pjId}`
@@ -53,7 +53,7 @@ module.exports = {
       })
     })
   },
-  updateProjectModul: (pjId, data) => {
+  updateProjectModel: (pjId, data) => {
     return new Promise((resolve, reject) => {
       const query = `UPDATE project SET ?
       WHERE pj_id = ${pjId}`
