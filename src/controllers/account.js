@@ -1,6 +1,6 @@
 require('dotenv')
 const bcrypt = require('bcrypt')
-const { createAccountModel, updateAccountModel, deleteAccountModel, checkExistedEmailModel } = require('../models/account')
+const { createAccountModel, updateAccountModel, deleteAccountModel, checkExistedEmailModel, checkAccountModel } = require('../models/account')
 const { successRegisterHandling, errorRegisterHandling, errorInternalHandling, successLoginHandling, passwordLoginHandling, emailLoginHandling, methodErrorHandling, failDeleteHandling, successDeleteHandling, successUpdateHandling, failUpdateHandling } = require('../helpers/respons-handling')
 const jwt = require('jsonwebtoken')
 const moment = require('moment')
@@ -76,18 +76,28 @@ module.exports = {
   updateEngineerAccount: async (req, res) => {
     try {
       const { acId } = req.params
-      const { name, email, phone, password, jobTitle, location, jobType, desc } = req.body
       const salt = bcrypt.genSaltSync(10)
-      const encrypt = bcrypt.hashSync(password, salt)
 
+      const getAc = await checkAccountModel(acId)
       const data = {
-        ac_name: name, ac_email: email, ac_phone: phone, ac_password: encrypt, ac_updated_at: now
+        ...req.body
       }
+      data.ac_password = req.body.ac_password === undefined ? getAc[0].ac_password : bcrypt.hashSync(req.body.ac_password, salt)
+      delete data.en_desc
+      delete data.en_job_title
+      delete data.en_location
+      delete data.en_job_type
+
       const dataAdv = {
-        en_job_title: jobTitle, en_location: location, en_job_type: jobType, en_desc: desc
+        ...req.body
       }
+      delete dataAdv.ac_name
+      delete dataAdv.ac_email
+      delete dataAdv.ac_phone
+      delete dataAdv.ac_password
 
       const result = await updateAccountModel(acId, req, data, 'Engineer', dataAdv)
+
       if (result.affectedRows) {
         successUpdateHandling(res, acId, scopeEn)
       } else {
@@ -100,16 +110,24 @@ module.exports = {
   updateCompanyAccount: async (req, res) => {
     try {
       const { acId } = req.params
-      const { name, email, phone, password, company, position, field, location } = req.body
       const salt = bcrypt.genSaltSync(10)
-      const encrypt = bcrypt.hashSync(password, salt)
 
+      const getAc = await checkAccountModel(acId)
       const data = {
-        ac_name: name, ac_email: email, ac_phone: phone, ac_password: encrypt, ac_updated_at: now
+        ...req.body
       }
+      data.ac_password = req.body.ac_password === undefined ? getAc[0].ac_password : bcrypt.hashSync(req.body.ac_password, salt)
+      delete data.cp_company
+      delete data.cp_position
+      delete data.cp_field
+      delete data.cp_location
+
       const dataAdv = {
-        cp_company: company, cp_position: position, cp_field: field, cp_location: location
+        ...req.body
       }
+      delete dataAdv.ac_name
+      delete dataAdv.ac_email
+      delete dataAdv.ac_password
 
       const result = await updateAccountModel(acId, req, data, 'Company', dataAdv)
       if (result.affectedRows) {
@@ -124,16 +142,23 @@ module.exports = {
   updateAdminAccount: async (req, res) => {
     try {
       const { acId } = req.params
-      const { name, email, phone, password, jobTitle, location } = req.body
       const salt = bcrypt.genSaltSync(10)
-      const encrypt = bcrypt.hashSync(password, salt)
 
+      const getAc = await checkAccountModel(acId)
       const data = {
-        ac_name: name, ac_email: email, ac_phone: phone, ac_password: encrypt, ac_updated_at: now
+        ...req.body
       }
+      data.ac_password = req.body.ac_password === undefined ? getAc[0].ac_password : bcrypt.hashSync(req.body.ac_password, salt)
+      delete data.ad_job_title
+      delete data.ad_location
+
       const dataAdv = {
-        ad_job_title: jobTitle, ad_location: location
+        ...req.body
       }
+      delete dataAdv.ac_name
+      delete dataAdv.ac_email
+      delete dataAdv.ac_phone
+      delete dataAdv.ac_password
 
       const result = await updateAccountModel(acId, req, data, 'Admin', dataAdv)
       if (result.affectedRows) {
@@ -201,7 +226,7 @@ module.exports = {
             level
           }
 
-          const token = jwt.sign(payload, process.env.JWT_KEY, { expiresIn: '1h' })
+          const token = jwt.sign(payload, process.env.JWT_KEY, { expiresIn: '5h' })
           payload = { ...payload, token }
           delete payload.password
           successLoginHandling(res, payload)
@@ -212,7 +237,6 @@ module.exports = {
         emailLoginHandling(res)
       }
     } catch (error) {
-      console.log(error)
       errorInternalHandling(res)
     }
   }

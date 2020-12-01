@@ -1,5 +1,5 @@
 const { getAllEngineerModel, getEngineerByIdModel } = require('../models/engineer')
-const { nestedJSONObjectEngineer, errorInternalHandling, failGetByIdHandling, methodErrorHandling } = require('../helpers/respons-handling')
+const { errorInternalHandling, failGetByIdHandling, methodErrorHandling, successGetHandling, successGetByIdHandling } = require('../helpers/respons-handling')
 const scope = 'engineer'
 
 module.exports = {
@@ -37,8 +37,9 @@ module.exports = {
 
       const offset = (page - 1) * limit
       const result = await getAllEngineerModel(searchKey, searchValue, limit, offset, filter)
+
       if (result.length) {
-        nestedJSONObjectEngineer(res, result, 0, 0)
+        successGetHandling(res, result, scope)
       } else {
         methodErrorHandling(res, scope)
       }
@@ -51,7 +52,7 @@ module.exports = {
       const { enId } = req.params
       const result = await getEngineerByIdModel(enId)
       if (result.length) {
-        nestedJSONObjectEngineer(res, result, 1, enId)
+        successGetByIdHandling(res, scope, enId, result)
       } else {
         failGetByIdHandling(res, scope, enId)
       }

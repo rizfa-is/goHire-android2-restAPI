@@ -146,7 +146,7 @@ module.exports = {
         const group = accumulate[item.ac_name]
 
         if (Array.isArray(group.project)) {
-          group.project.push(item.project)
+          group.project.push(item)
         } else {
           group.project = [group.project, item.project]
         }

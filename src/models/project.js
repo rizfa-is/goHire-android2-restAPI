@@ -18,7 +18,7 @@ module.exports = {
   getProjectByIdModel: (pjId) => {
     return new Promise((resolve, reject) => {
       const query = `SELECT * FROM project 
-      WHERE pj_id = ${pjId}`
+      WHERE cp_id = ${pjId}`
       db.query(query, (err, result, _fields) => {
         if (!err) {
           resolve(result)

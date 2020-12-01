@@ -58,6 +58,7 @@ module.exports = {
   createExperience: async (req, res) => {
     try {
       const data = req.body
+
       const result = await createExperienceModel(data)
       if (result.affectedRows) {
         successCreateHandling(res, scope)
@@ -91,6 +92,7 @@ module.exports = {
     try {
       const { exId } = req.params
       const data = req.body
+
       const result = await getExperienceByIdModel(exId)
       if (result.length) {
         const result2 = await updateExperienceModel(exId, data)

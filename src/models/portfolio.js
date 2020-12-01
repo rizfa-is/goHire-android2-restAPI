@@ -18,7 +18,7 @@ module.exports = {
   getPortfolioByIdModel: (prId) => {
     return new Promise((resolve, reject) => {
       const query = `SELECT * FROM portfolio 
-      WHERE pr_id = ${prId}`
+      WHERE en_id = ${prId}`
       db.query(query, (err, result, _fields) => {
         if (!err) {
           resolve(result)

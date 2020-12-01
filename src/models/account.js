@@ -12,6 +12,7 @@ module.exports = {
       db.query(query, data, async (err, result, field) => {
         if (!err) {
           let newData = { }
+
           if (level === 'Engineer') {
             await createEngineerModel({
               ac_id: result.insertId,
@@ -54,7 +55,9 @@ module.exports = {
               ad_created_at: now,
               ad_updated_at: now
             }
+            delete newData.ac_password
           }
+
           resolve(newData)
         } else {
           reject(new Error(err))
@@ -90,6 +93,7 @@ module.exports = {
               ad_updated_at: now
             })
           }
+
           resolve(result)
         } else {
           reject(new Error(err))
@@ -121,6 +125,19 @@ module.exports = {
     return new Promise((resolve, reject) => {
       const query = `SELECT * FROM account 
       WHERE ac_email = '${acEmail}'`
+      db.query(query, (err, result, field) => {
+        if (!err) {
+          resolve(result)
+        } else {
+          reject(new Error(err))
+        }
+      })
+    })
+  },
+  checkAccountModel: (acId) => {
+    return new Promise((resolve, reject) => {
+      const query = `SELECT * FROM account 
+      WHERE ac_id = '${acId}'`
       db.query(query, (err, result, field) => {
         if (!err) {
           resolve(result)

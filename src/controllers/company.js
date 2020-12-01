@@ -1,5 +1,5 @@
 const { getAllCompanyModel, getCompanyByIdModel } = require('../models/company')
-const { methodErrorHandling, errorInternalHandling, failGetByIdHandling, nestedJSONObjectCompany } = require('../helpers/respons-handling')
+const { methodErrorHandling, errorInternalHandling, failGetByIdHandling, successGetHandling, successGetByIdHandling } = require('../helpers/respons-handling')
 const scope = 'company'
 
 module.exports = {
@@ -38,7 +38,7 @@ module.exports = {
       const offset = (page - 1) * limit
       const result = await getAllCompanyModel(searchKey, searchValue, limit, offset, filter)
       if (result.length) {
-        nestedJSONObjectCompany(res, result, 0, 0)
+        successGetHandling(res, result, scope)
       } else {
         methodErrorHandling(res, scope)
       }
@@ -51,7 +51,7 @@ module.exports = {
       const { cpId } = req.params
       const result = await getCompanyByIdModel(cpId)
       if (result.length) {
-        nestedJSONObjectCompany(res, result, 1, cpId)
+        successGetByIdHandling(res, scope, cpId, result)
       } else {
         failGetByIdHandling(res, scope, cpId)
       }
