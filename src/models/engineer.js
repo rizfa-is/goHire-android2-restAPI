@@ -1,6 +1,7 @@
 const db = require('../helpers/db')
-const { getAbilityByIdModel } = require('./ability')
-const { getPortfolioByIdModel } = require('./portfolio')
+const { getAbilityByEnIdModel } = require('./ability')
+const { getPortfolioByEnIdModel } = require('./portfolio')
+const { getExperienceByEnIdModel } = require('./experience')
 
 module.exports = {
   getAllEngineerModel: (searchKey, searchValue, limit, offset, filter) => {
@@ -54,8 +55,9 @@ module.exports = {
           for (let i = 0; i < result.length; i++) {
             const item = result[i]
 
-            const skill = await getAbilityByIdModel(item.en_id)
-            const portfolio = await getPortfolioByIdModel(item.en_id)
+            const skill = await getAbilityByEnIdModel(item.en_id)
+            const portfolio = await getPortfolioByEnIdModel(item.en_id)
+            const experience = await getExperienceByEnIdModel(item.en_id)
 
             newdb[i] = {
               en_id: item.en_id,
@@ -70,7 +72,8 @@ module.exports = {
               en_gitlab: item.en_gitlab,
               en_avatar: item.en_avatar,
               ability: skill,
-              portfolio: portfolio
+              portfolio: portfolio,
+              experience: experience
             }
           }
           resolve(newdb)
@@ -109,8 +112,9 @@ module.exports = {
           for (let i = 0; i < result.length; i++) {
             const item = result[i]
 
-            const skill = await getAbilityByIdModel(item.en_id)
-            const portfolio = await getPortfolioByIdModel(item.en_id)
+            const skill = await getAbilityByEnIdModel(item.en_id)
+            const portfolio = await getPortfolioByEnIdModel(item.en_id)
+            const experience = await getExperienceByEnIdModel(item.en_id)
 
             newdb[i] = {
               en_id: item.en_id,
@@ -125,7 +129,8 @@ module.exports = {
               en_gitlab: item.en_gitlab,
               en_avatar: item.en_avatar,
               ability: skill,
-              portfolio: portfolio
+              portfolio: portfolio,
+              experience: experience
             }
           }
           resolve(newdb)

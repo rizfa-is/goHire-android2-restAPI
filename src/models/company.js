@@ -1,5 +1,5 @@
 const db = require('../helpers/db')
-const { getProjectByIdModel } = require('./project')
+const { getProjectByCpIdModel } = require('./project')
 
 module.exports = {
   getAllCompanyModel: (searchKey, searchValue, limit, offset, filter) => {
@@ -52,7 +52,7 @@ module.exports = {
           for (let i = 0; i < result.length; i++) {
             const item = result[i]
 
-            const project = await getProjectByIdModel(item.cp_id)
+            const project = await getProjectByCpIdModel(item.cp_id)
 
             newdb[i] = {
               ac_id: item.ac_id,
@@ -106,7 +106,7 @@ module.exports = {
           for (let i = 0; i < result.length; i++) {
             const item = result[i]
 
-            const project = await getProjectByIdModel(item.cp_id)
+            const project = await getProjectByCpIdModel(item.cp_id)
 
             newdb[i] = {
               ac_id: item.ac_id,

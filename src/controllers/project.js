@@ -1,4 +1,4 @@
-const { getAllProjectModel, getProjectByIdModel, createProjectModel, deleteProjectModel, updateProjectModel } = require('../models/project')
+const { getAllProjectModel, getProjectByPjIdModel, createProjectModel, deleteProjectModel, updateProjectModel } = require('../models/project')
 const { successGetHandling, successGetByIdHandling, failGetByIdHandling, methodErrorHandling, errorInternalHandling, successCreateHandling, failCreateHandling, successDeleteHandling, failDeleteHandling, successUpdateHandling, failUpdateHandling } = require('../helpers/respons-handling')
 const moment = require('moment')
 const now = moment().format('YYYY-MM-DD HH:mm:ss')
@@ -46,7 +46,7 @@ module.exports = {
   getProjectById: async (req, res) => {
     try {
       const { pjId } = req.params
-      const result = await getProjectByIdModel(pjId)
+      const result = await getProjectByPjIdModel(pjId)
       if (result.length) {
         successGetByIdHandling(res, scope, pjId, result)
       } else {
@@ -78,7 +78,7 @@ module.exports = {
   deleteProject: async (req, res) => {
     try {
       const { pjId } = req.params
-      const result = await getProjectByIdModel(pjId)
+      const result = await getProjectByPjIdModel(pjId)
       if (result.length) {
         const result2 = await deleteProjectModel(pjId)
         if (result2.affectedRows) {
@@ -97,7 +97,7 @@ module.exports = {
     try {
       const { pjId } = req.params
       const data = req.body
-      const result = await getProjectByIdModel(pjId)
+      const result = await getProjectByPjIdModel(pjId)
 
       const setData = {
         ...data,

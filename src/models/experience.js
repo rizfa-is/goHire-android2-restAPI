@@ -15,7 +15,20 @@ module.exports = {
       })
     })
   },
-  getExperienceByIdModel: (exId) => {
+  getExperienceByEnIdModel: (exId) => {
+    return new Promise((resolve, reject) => {
+      const query = `SELECT * FROM experience 
+      WHERE en_id = ${exId}`
+      db.query(query, (err, result, _fields) => {
+        if (!err) {
+          resolve(result)
+        } else {
+          reject(new Error(err))
+        }
+      })
+    })
+  },
+  getExperienceByExIdModel: (exId) => {
     return new Promise((resolve, reject) => {
       const query = `SELECT * FROM experience 
       WHERE ex_id = ${exId}`

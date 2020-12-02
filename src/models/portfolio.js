@@ -15,10 +15,23 @@ module.exports = {
       })
     })
   },
-  getPortfolioByIdModel: (prId) => {
+  getPortfolioByEnIdModel: (prId) => {
     return new Promise((resolve, reject) => {
       const query = `SELECT * FROM portfolio 
       WHERE en_id = ${prId}`
+      db.query(query, (err, result, _fields) => {
+        if (!err) {
+          resolve(result)
+        } else {
+          reject(new Error(err))
+        }
+      })
+    })
+  },
+  getPortfolioByPrIdModel: (prId) => {
+    return new Promise((resolve, reject) => {
+      const query = `SELECT * FROM portfolio 
+      WHERE pr_id = ${prId}`
       db.query(query, (err, result, _fields) => {
         if (!err) {
           resolve(result)

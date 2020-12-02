@@ -15,10 +15,23 @@ module.exports = {
       })
     })
   },
-  getProjectByIdModel: (pjId) => {
+  getProjectByCpIdModel: (pjId) => {
     return new Promise((resolve, reject) => {
       const query = `SELECT * FROM project 
       WHERE cp_id = ${pjId}`
+      db.query(query, (err, result, _fields) => {
+        if (!err) {
+          resolve(result)
+        } else {
+          reject(new Error(err))
+        }
+      })
+    })
+  },
+  getProjectByPjIdModel: (pjId) => {
+    return new Promise((resolve, reject) => {
+      const query = `SELECT * FROM project 
+      WHERE pj_id = ${pjId}`
       db.query(query, (err, result, _fields) => {
         if (!err) {
           resolve(result)

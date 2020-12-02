@@ -1,4 +1,4 @@
-const { createAbilityModel, getAllAbilityModel, getAbilityByIdModel, deleteAbilityModel, updateAbilityModel } = require('../models/ability')
+const { createAbilityModel, getAllAbilityModel, getAbilityByAbIdModel, deleteAbilityModel, updateAbilityModel } = require('../models/ability')
 const { successGetHandling, successGetByIdHandling, failGetByIdHandling, methodErrorHandling, errorInternalHandling, successCreateHandling, failCreateHandling, successDeleteHandling, failDeleteHandling, successUpdateHandling, failUpdateHandling } = require('../helpers/respons-handling')
 const scope = 'ability'
 
@@ -44,7 +44,7 @@ module.exports = {
   getAbilityById: async (req, res) => {
     try {
       const { abId } = req.params
-      const result = await getAbilityByIdModel(abId)
+      const result = await getAbilityByAbIdModel(abId)
       if (result.length) {
         successGetByIdHandling(res, scope, abId, result)
       } else {
@@ -70,7 +70,7 @@ module.exports = {
   deleteAbility: async (req, res) => {
     try {
       const { abId } = req.params
-      const result = await getAllAbilityModel(abId)
+      const result = await getAbilityByAbIdModel(abId)
       if (result.length) {
         const result2 = await deleteAbilityModel(abId)
         if (result2.affectedRows) {
@@ -89,7 +89,8 @@ module.exports = {
     try {
       const { abId } = req.params
       const data = req.body
-      const result = await getAbilityByIdModel(abId)
+      const result = await getAbilityByAbIdModel(abId)
+      console.log(result)
       if (result.length) {
         const result2 = await updateAbilityModel(abId, data)
         if (result2.affectedRows) {

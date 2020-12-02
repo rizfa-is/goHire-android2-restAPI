@@ -48,7 +48,7 @@ module.exports = {
   failGetByIdHandling: (res, scope, id) => {
     res.status(404).send({
       success: false,
-      message: `Horay, Data ${scope} with id ${id} successfully loaded!`
+      message: `Unfortunely, Data ${scope} with id ${id} unsuccessfully loaded!`
     })
   },
   successCreateHandling: (res, scope) => {

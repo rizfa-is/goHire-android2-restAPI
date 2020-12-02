@@ -62,6 +62,7 @@ module.exports = {
       const reqBody = req.body
       const data = {
         ...reqBody,
+        hr_status: 'wait',
         hr_created_at: now
       }
       const result = await createHireModel(data)

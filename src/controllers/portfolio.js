@@ -1,4 +1,4 @@
-const { createPortfolioModel, deletePortfolioModel, updatePortfolioModel, getAllPortfolioModel, getPortfolioByIdModel } = require('../models/portfolio')
+const { createPortfolioModel, deletePortfolioModel, updatePortfolioModel, getAllPortfolioModel, getPortfolioByPrIdModel } = require('../models/portfolio')
 const { successGetHandling, successGetByIdHandling, failGetByIdHandling, methodErrorHandling, errorInternalHandling, successCreateHandling, failCreateHandling, successDeleteHandling, failDeleteHandling, successUpdateHandling, failUpdateHandling } = require('../helpers/respons-handling')
 const scope = 'portfolio'
 
@@ -44,7 +44,7 @@ module.exports = {
   getPortfolioById: async (req, res) => {
     try {
       const { prId } = req.params
-      const result = await getPortfolioByIdModel(prId)
+      const result = await getPortfolioByPrIdModel(prId)
       if (result.length) {
         successGetByIdHandling(res, scope, prId, result)
       } else {
@@ -59,7 +59,7 @@ module.exports = {
       const data = req.body
       const setData = {
         ...data,
-        pr_img: req.files === undefined ? '' : req.file.filename
+        pr_img: req.file === undefined ? '' : req.file.filename
       }
       const result = await createPortfolioModel(setData)
       if (result.affectedRows) {
@@ -74,7 +74,7 @@ module.exports = {
   deletePortfolio: async (req, res) => {
     try {
       const { prId } = req.params
-      const result = await getPortfolioByIdModel(prId)
+      const result = await getPortfolioByPrIdModel(prId)
       if (result.length) {
         const result2 = await deletePortfolioModel(prId)
         if (result2.affectedRows) {
@@ -93,7 +93,7 @@ module.exports = {
     try {
       const { prId } = req.params
       const data = req.body
-      const result = await getPortfolioByIdModel(prId)
+      const result = await getPortfolioByPrIdModel(prId)
       const setData = {
         ...data,
         pr_img: req.file === undefined ? result[0].pr_img : req.file.filename

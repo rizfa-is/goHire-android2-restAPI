@@ -15,9 +15,21 @@ module.exports = {
       })
     })
   },
-  getAbilityByIdModel: (abId) => {
+  getAbilityByEnIdModel: (abId) => {
     return new Promise((resolve, reject) => {
       const query = `SELECT * FROM ability WHERE en_id = ${abId} ORDER BY ability.en_id`
+      db.query(query, (err, result, fields) => {
+        if (!err) {
+          resolve(result)
+        } else {
+          reject(new Error(err))
+        }
+      })
+    })
+  },
+  getAbilityByAbIdModel: (abId) => {
+    return new Promise((resolve, reject) => {
+      const query = `SELECT * FROM ability WHERE ab_id = ${abId} ORDER BY ability.en_id`
       db.query(query, (err, result, fields) => {
         if (!err) {
           resolve(result)

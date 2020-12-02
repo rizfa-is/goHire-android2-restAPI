@@ -87,6 +87,9 @@ module.exports = {
       delete data.en_job_title
       delete data.en_location
       delete data.en_job_type
+      delete data.en_ig
+      delete data.en_github
+      delete data.en_gitlab
 
       const dataAdv = {
         ...req.body
@@ -121,6 +124,9 @@ module.exports = {
       delete data.cp_position
       delete data.cp_field
       delete data.cp_location
+      delete data.cp_desc
+      delete data.cp_insta
+      delete data.cp_linkedin
 
       const dataAdv = {
         ...req.body
@@ -128,6 +134,7 @@ module.exports = {
       delete dataAdv.ac_name
       delete dataAdv.ac_email
       delete dataAdv.ac_password
+      delete dataAdv.ac_phone
 
       const result = await updateAccountModel(acId, req, data, 'Company', dataAdv)
       if (result.affectedRows) {

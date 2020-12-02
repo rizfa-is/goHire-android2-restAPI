@@ -1,4 +1,4 @@
-const { createExperienceModel, deleteExperienceModel, updateExperienceModel, getAllExperienceModel, getExperienceByIdModel } = require('../models/experience')
+const { createExperienceModel, deleteExperienceModel, updateExperienceModel, getAllExperienceModel, getExperienceByExIdModel } = require('../models/experience')
 const { successGetHandling, successGetByIdHandling, failGetByIdHandling, methodErrorHandling, errorInternalHandling, successCreateHandling, failCreateHandling, successDeleteHandling, failDeleteHandling, successUpdateHandling, failUpdateHandling } = require('../helpers/respons-handling')
 const scope = 'experience'
 
@@ -45,7 +45,7 @@ module.exports = {
     try {
       const { exId } = req.params
 
-      const result = await getExperienceByIdModel(exId)
+      const result = await getExperienceByExIdModel(exId)
       if (result.length) {
         successGetByIdHandling(res, scope, exId, result)
       } else {
@@ -73,7 +73,7 @@ module.exports = {
     try {
       const { exId } = req.params
 
-      const result = await getExperienceByIdModel(exId)
+      const result = await getExperienceByExIdModel(exId)
       if (result.length) {
         const result2 = await deleteExperienceModel(exId)
         if (result2.affectedRows) {
@@ -93,7 +93,7 @@ module.exports = {
       const { exId } = req.params
       const data = req.body
 
-      const result = await getExperienceByIdModel(exId)
+      const result = await getExperienceByExIdModel(exId)
       if (result.length) {
         const result2 = await updateExperienceModel(exId, data)
         if (result2.affectedRows) {
