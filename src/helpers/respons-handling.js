@@ -20,13 +20,13 @@ module.exports = {
     })
   },
   passwordLoginHandling: (res) => {
-    res.status(400).send({
+    res.status(403).send({
       success: false,
       message: 'Sorry, Wrong Password!'
     })
   },
   emailLoginHandling: (res) => {
-    res.status(400).send({
+    res.status(404).send({
       success: false,
       message: 'Unfortunely, Your email is not registered!'
     })

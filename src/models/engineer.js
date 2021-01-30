@@ -26,8 +26,10 @@ module.exports = {
       }
 
       const query = `SELECT 
+      engineer.ac_id,
       engineer.en_id, 
       account.ac_name, 
+      account.ac_phone, 
       engineer.en_job_title, 
       engineer.en_location, 
       engineer.en_job_type, 
@@ -60,8 +62,10 @@ module.exports = {
             const experience = await getExperienceByEnIdModel(item.en_id)
 
             newdb[i] = {
+              ac_id: item.ac_id,
               en_id: item.en_id,
               ac_name: item.ac_name,
+              ac_phone: item.ac_phone,
               en_job_title: item.en_job_title,
               en_job_type: item.en_job_type,
               en_location: item.en_location,
@@ -86,8 +90,10 @@ module.exports = {
   getEngineerByIdModel: (enId) => {
     return new Promise((resolve, reject) => {
       const query = `SELECT 
+      engineer.ac_id,
       engineer.en_id, 
       account.ac_name, 
+      account.ac_phone,
       engineer.en_job_title, 
       engineer.en_location, 
       engineer.en_job_type, 
@@ -117,8 +123,10 @@ module.exports = {
             const experience = await getExperienceByEnIdModel(item.en_id)
 
             newdb[i] = {
+              ac_id: item.ac_id,
               en_id: item.en_id,
               ac_name: item.ac_name,
+              ac_phone: item.ac_phone,
               en_job_title: item.en_job_title,
               en_job_type: item.en_job_type,
               en_location: item.en_location,

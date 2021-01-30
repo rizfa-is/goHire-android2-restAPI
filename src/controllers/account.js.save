@@ -221,10 +221,9 @@ module.exports = {
       const { email, password } = req.body
       const getUserData = await checkExistedEmailModel(email)
 
-      console.log(req.body)
       if (getUserData.length > 0) {
         const checkPassword = bcrypt.compareSync(password, getUserData[0].ac_password)
-        if (checkPassword) {
+	uuuuuuif (checkPassword) {
           const acID = getUserData[0].ac_id
           const email = getUserData[0].ac_email
           const password = getUserData[0].ac_password

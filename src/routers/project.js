@@ -4,7 +4,7 @@ const { getAllProject, getProjectById, createProject, deleteProject, updateProje
 const { authorizationCompany } = require('../middleware/authorize')
 const uploadImage = require('../middleware/multer')
 
-router.get('/project', authorizationCompany, getAllProject)
+router.get('/project', getAllProject)
 router.get('/project/:pjId', authorizationCompany, getProjectById)
 router.put('/project/update/:pjId', authorizationCompany, uploadImage, updateProject)
 router.post('/project/create', authorizationCompany, uploadImage, createProject)

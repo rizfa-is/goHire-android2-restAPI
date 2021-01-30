@@ -61,7 +61,7 @@ module.exports = {
       const data = req.body
       const setData = {
         ...data,
-        pj_img: req.files === undefined ? '' : req.file.filename,
+        pj_img: req.file === undefined ? '' : req.file.filename,
         pj_created_at: now,
         pj_updated_at: now
       }

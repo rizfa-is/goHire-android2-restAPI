@@ -3,13 +3,29 @@ const db = require('../helpers/db')
 module.exports = {
   getAllHireModel: (searchKey, searchValue, limit, offset) => {
     return new Promise((resolve, reject) => {
-      const query = `SELECT * FROM hire 
+      const query = `SELECT
+      hire.hr_id,
+      project.cp_id,
+      hire.en_id,
+      hire.pj_id,
+      project.pj_name,
+      project.pj_desc,
+      project.pj_deadline,
+      project.pj_img,
+      hire.hr_price,
+      hire.hr_message,
+      hire.hr_status,
+      hire.hr_date_confirm,
+      hire.hr_created_at
+      FROM hire
+      LEFT JOIN project ON project.pj_id = hire.pj_id
       WHERE ${searchKey} LIKE '%${searchValue}%' 
       LIMIT ${limit} OFFSET ${offset}`
       db.query(query, (err, result, fields) => {
         if (!err) {
           resolve(result)
         } else {
+          console.log(err)
           reject(new Error(err))
         }
       })
