@@ -1,7 +1,7 @@
 require('dotenv')
 const bcrypt = require('bcrypt')
 const { createAccountModel, updateAccountModel, deleteAccountModel, checkExistedEmailModel, checkAccountModel } = require('../models/account')
-const { successRegisterHandling, errorRegisterHandling, errorInternalHandling, successLoginHandling, passwordLoginHandling, emailLoginHandling, methodErrorHandling, failDeleteHandling, successDeleteHandling, successUpdateHandling, failUpdateHandling } = require('../helpers/respons-handling')
+const { successRegisterHandling, errorRegisterHandling, errorInternalHandling, successLoginHandling, passwordLoginHandling, emailLoginHandling, methodErrorHandling, failDeleteHandling, successDeleteHandling, successUpdateHandling, failUpdateHandling, successCheckEmail, successCheckPassword } = require('../helpers/respons-handling')
 const jwt = require('jsonwebtoken')
 const moment = require('moment')
 const now = moment().format('YYYY-MM-DD HH:mm:ss')
@@ -221,7 +221,6 @@ module.exports = {
       const { email, password } = req.body
       const getUserData = await checkExistedEmailModel(email)
 
-      console.log(req.body)
       if (getUserData.length > 0) {
         const checkPassword = bcrypt.compareSync(password, getUserData[0].ac_password)
         if (checkPassword) {
@@ -240,6 +239,40 @@ module.exports = {
           payload = { ...payload, token }
           delete payload.password
           successLoginHandling(res, payload)
+        } else {
+          passwordLoginHandling(res)
+        }
+      } else {
+        emailLoginHandling(res)
+      }
+    } catch (error) {
+      errorInternalHandling(res)
+    }
+  },
+  checkEmail: async (req, res) => {
+    try {
+      const email = req.body.email
+      const checkEmail = await checkExistedEmailModel(email)
+
+      if (checkEmail.length > 0) {
+        successCheckEmail(res)
+      } else {
+        emailLoginHandling(res)
+      }
+    } catch (error) {
+      errorInternalHandling(res)
+    }
+  },
+  checkPassword: async (req, res) => {
+    try {
+      const { email, password } = req.body
+      const getUserData = await checkExistedEmailModel(email)
+
+      if (getUserData.length > 0) {
+        const checkPassword = bcrypt.compareSync(password, getUserData[0].ac_password)
+
+        if (checkPassword) {
+          successCheckPassword(res)
         } else {
           passwordLoginHandling(res)
         }

@@ -1,4 +1,16 @@
 module.exports = {
+  successCheckEmail: (res) => {
+    res.status(200).send({
+      success: true,
+      message: 'Horay, Email already exist!'
+    })
+  },
+  successCheckPassword: (res) => {
+    res.status(200).send({
+      success: true,
+      message: 'Horay, Password matched!'
+    })
+  },
   successRegisterHandling: (res, result) => {
     res.status(200).send({
       success: true,
